@@ -14,7 +14,7 @@ var Field = function(deck){
 		var arrayOut = [],
 			i;
 		for(i = 0; i < cards.length; i++){
-			arrayOut.push('<div id="card-',  i + 1, '" class="card ',cards[i].getSuit(),' ',cards[i].getNumber(),'">',cards[i].getName(),'</div>');
+			arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard ',cards[i].getSuit(),' ',cards[i].getNumber(),'">',cards[i].getName(),'</div>');
 		}
 		return arrayOut.join('');
 	};
@@ -116,12 +116,12 @@ var Hand = function(deck){
 		var locked = false;
 		var clickedIndex = ($clicked.attr("id").split("-")[1]) - 1;
 		console.log("index: " + clickedIndex);
-		$(".card").each(function(){
+		$(".fieldCard").each(function(){
 			var $this = $(this);
 			var thisTop = parseInt($this.css("top"));
 			var thisLeft = parseInt($this.css("left"));
-			
-			if(((thisTop < (clickedTop + 50)) && (thisTop > clickedTop)) && (((thisLeft > (clickedLeft - 20)) && (thisLeft < clickedLeft)) || ((thisRight > (clickedRight - 20)) && (thisRight < clickedRight)))){
+			// If a card is less than 50px below and 20px to the left or 40px to the right
+			if((thisTop === (clickedTop + 40)) && ((thisLeft === (clickedLeft + 20)) || (thisLeft === (clickedLeft - 20)))){
 				locked = true;
 				
 			}
@@ -132,7 +132,7 @@ var Hand = function(deck){
 		if(!locked){
 			//console.log("this card is free");
 			myHand.receiveCard(myField.removeCard(clickedIndex));
-			$clicked.hide();
+			$clicked.removeClass("fieldCard").hide();
 			$hand.html(myHand.toHtml());
 		} else{
 			console.log("this card is locked");
