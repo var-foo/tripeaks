@@ -115,12 +115,14 @@ var Score = function(){
 	var $hand = $("#hand");
 	var $card = $(".card");
 	var $score = $("#score");
+	var $cardsLeft = $("#cardsLeft");
 	
 	myDeck.shuffle();
 	myDeck.deal();
 	$field.html(myField.toHtml());
 	myHand.receiveCard(myHole.hitHand());
 	$hand.html(myHand.toHtml());
+	$cardsLeft.html(myHole.checkForCards());
 	var logCards = function(){
 		myField.logCards();
 		myHole.logCards();
@@ -135,7 +137,7 @@ var Score = function(){
 		myScore.removeFromScore();
 		$score.html(myScore.getScore());
 		if(!!myHole.checkForCards()){
-			return;	
+			$cardsLeft.html(myHole.checkForCards());
 		} else{
 			$hole.hide();
 		}
