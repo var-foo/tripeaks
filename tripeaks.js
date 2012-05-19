@@ -84,20 +84,43 @@ var Hand = function(deck){
 	}
 };
 
+var Score = function(){
+	var value = 0;
+	var incrementer = 1;
+	
+	this.addToScore = function(){
+		value = value + incrementer;
+		incrementer ++;
+	};
+	this.removeFromScore = function(){
+		console.log("removing from score");
+		value = value - 5;
+		incrementer = 1;
+	};
+	
+	this.getScore = function(){
+		return value;
+	};
+};
+
 (function(){
 	var myDeck = new Deck();
 	var myHole = new Hole(myDeck);
 	var myHand = new Hand(myDeck);
 	var myField = new Field(myDeck);
+	var myScore = new Score();
 	
 	var $field = $("#field");
 	var $hole = $("#hole");
 	var $hand = $("#hand");
 	var $card = $(".card");
+	var $score = $("#score");
 	
 	myDeck.shuffle();
 	myDeck.deal();
 	$field.html(myField.toHtml());
+	myHand.receiveCard(myHole.hitHand());
+	$hand.html(myHand.toHtml());
 	var logCards = function(){
 		myField.logCards();
 		myHole.logCards();
@@ -109,11 +132,14 @@ var Hand = function(deck){
 		
 		$hand.html(myHand.toHtml());
 		logCards();
+		myScore.removeFromScore();
+		$score.html(myScore.getScore());
 		if(!!myHole.checkForCards()){
 			return;	
 		} else{
 			$hole.hide();
 		}
+		
 	});
 	
 	$(".card").on("click", function(){
@@ -150,6 +176,8 @@ var Hand = function(deck){
 				myHand.receiveCard(myField.removeCard(clickedIndex));
 				$clicked.removeClass("fieldCard").hide();
 				$hand.html(myHand.toHtml());
+				myScore.addToScore();
+				$score.html(myScore.getScore());
 			}
 			
 		} else if((!locked) && clickedValue  === 13){
@@ -158,6 +186,8 @@ var Hand = function(deck){
 				myHand.receiveCard(myField.removeCard(clickedIndex));
 				$clicked.removeClass("fieldCard").hide();
 				$hand.html(myHand.toHtml());
+				myScore.addToScore();
+				$score.html(myScore.getScore());
 			}
 		} else if((!locked) && clickedValue === 1){
 			// what to do if the clicked card is an ace
@@ -165,6 +195,8 @@ var Hand = function(deck){
 				myHand.receiveCard(myField.removeCard(clickedIndex));
 				$clicked.removeClass("fieldCard").hide();
 				$hand.html(myHand.toHtml());
+				myScore.addToScore();
+				$score.html(myScore.getScore());
 			}
 		} else{
 			console.log("this card is locked");
