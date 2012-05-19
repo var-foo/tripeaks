@@ -1,9 +1,13 @@
 var Field = function(deck){
 	var cards = [],
 		i;
-	for(i = 0; i < 30; i++){
-		cards.push(deck.deal());
+	this.init = function(){
+		cards = [];
+		for(i = 0; i < 30; i++){
+			cards.push(deck.deal());
+		};
 	};
+	
 	this.logCards = function(){
 		console.log("Field cards: " + cards.length);
 	};
@@ -25,14 +29,19 @@ var Field = function(deck){
 		var card = cards[index];
 		//cards.splice(index, 1);
 		return card;
-	}
+	};
+	this.init();
 };
 
 var Hole = function(deck){
 	var cards = [];
-	for(i = 0; i < 22; i++){
-		cards.push(deck.deal());
-	}
+	
+	this.init = function(){
+		cards = [];
+		for(i = 0; i < 22; i++){
+			cards.push(deck.deal());
+		};
+	};
 	this.logCards = function(){
 		console.log("Hole cards: " + cards.length);
 	}
@@ -56,6 +65,7 @@ var Hole = function(deck){
 		}
 		return arrayOut.join('');
 	};
+	this.init();
 };
 
 var Hand = function(deck){
@@ -82,6 +92,9 @@ var Hand = function(deck){
 		var topCard = this.getTopCard();
 		return topCard.getNumber();
 	}
+	this.empty = function(){
+		cards = [];
+	}
 };
 
 var Score = function(){
@@ -94,7 +107,7 @@ var Score = function(){
 	};
 	this.removeFromScore = function(){
 		console.log("removing from score");
-		value = value - 5;
+		value = value - 3;
 		incrementer = 1;
 	};
 	
@@ -116,6 +129,7 @@ var Score = function(){
 	var $card = $(".card");
 	var $score = $("#score");
 	var $cardsLeft = $("#cardsLeft");
+	var $newHand = $("#newHand");
 	
 	myDeck.shuffle();
 	myDeck.deal();
@@ -144,7 +158,7 @@ var Score = function(){
 		
 	});
 	
-	$(".card").on("click", function(){
+	$(".fieldCard").on("click", function(){
 		var $clicked = $(this);
 		var clickedTop = parseInt($clicked.css("top"));
 		var clickedLeft = parseInt($clicked.css("left"));
@@ -204,6 +218,21 @@ var Score = function(){
 			console.log("this card is locked");
 		}
 			
+	});
+	
+	$newHand.on("click", function(){
+		myDeck = new Deck();
+		myHole = new Hole(myDeck);
+		myHand = new Hand(myDeck);
+		myField = new Field(myDeck);
+		myDeck.shuffle();
+		myDeck.deal();
+		$field.html(myField.toHtml());
+		myHand.empty();
+		myHand.receiveCard(myHole.hitHand());
+		$hand.html(myHand.toHtml());
+		$cardsLeft.html(myHole.checkForCards());
+		console.log("You wish to have a new hand.");
 	});
 	
 }());
