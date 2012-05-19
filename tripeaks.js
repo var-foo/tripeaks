@@ -10,6 +10,9 @@ var Field = function(deck){
 	this.receiveCard = function(card){
 		cards.push(card);
 	};
+	this.returnCard = function(index){
+		return cards[index];
+	};
 	this.toHtml = function(){
 		var arrayOut = [],
 			i;
@@ -20,7 +23,7 @@ var Field = function(deck){
 	};
 	this.removeCard = function(index){
 		var card = cards[index];
-		cards.splice(index, 1);
+		//cards.splice(index, 1);
 		return card;
 	}
 };
@@ -75,6 +78,10 @@ var Hand = function(deck){
 	this.getTopCard = function(){
 		return cards[(cards.length - 1)];
 	}
+	this.getValue = function(){
+		var topCard = this.getTopCard();
+		return topCard.getNumber();
+	}
 };
 
 (function(){
@@ -114,8 +121,15 @@ var Hand = function(deck){
 		var clickedTop = parseInt($clicked.css("top"));
 		var clickedLeft = parseInt($clicked.css("left"));
 		var locked = false;
-		var clickedIndex = ($clicked.attr("id").split("-")[1]) - 1;
+		var $clickedId = $clicked.attr("id");
+		var clickedIndex = ($clickedId.split("-")[1]) - 1;
+		var clickedValue = (myField.returnCard(clickedIndex)).getNumber();
+		
+		var handValue;
+		
 		console.log("index: " + clickedIndex);
+		console.log("value: " + clickedValue);
+		console.log("text: " + $clicked.attr("class"));
 		$(".fieldCard").each(function(){
 			var $this = $(this);
 			var thisTop = parseInt($this.css("top"));
@@ -129,11 +143,29 @@ var Hand = function(deck){
 			//console.log("left: " +parseInt($(this).css("left")));
 			
 		});
-		if(!locked){
-			//console.log("this card is free");
-			myHand.receiveCard(myField.removeCard(clickedIndex));
-			$clicked.removeClass("fieldCard").hide();
-			$hand.html(myHand.toHtml());
+		if((!locked) && (clickedValue != 1) && (clickedValue != 13)){
+			// If the card's face value is 1 less or 1 greater than the hand card, remove it from
+			// the field and add it to the hand.
+			if((myHand.getValue() === clickedValue + 1) || (myHand.getValue() === clickedValue - 1)){
+				myHand.receiveCard(myField.removeCard(clickedIndex));
+				$clicked.removeClass("fieldCard").hide();
+				$hand.html(myHand.toHtml());
+			}
+			
+		} else if((!locked) && clickedValue  === 13){
+			// what to do if the clicked card is a king
+			if((myHand.getValue() === 1) || (myHand.getValue() === clickedValue - 1)){
+				myHand.receiveCard(myField.removeCard(clickedIndex));
+				$clicked.removeClass("fieldCard").hide();
+				$hand.html(myHand.toHtml());
+			}
+		} else if((!locked) && clickedValue === 1){
+			// what to do if the clicked card is an ace
+			if((myHand.getValue() === 13) || (myHand.getValue() === clickedValue + 1)){
+				myHand.receiveCard(myField.removeCard(clickedIndex));
+				$clicked.removeClass("fieldCard").hide();
+				$hand.html(myHand.toHtml());
+			}
 		} else{
 			console.log("this card is locked");
 		}
