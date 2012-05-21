@@ -102,34 +102,70 @@ var Score = function(){
 	var incrementer = 1;
 	
 	this.addToScore = function(){
-		value = value + incrementer;
+		var newValue = value + incrementer;
+		value = parseInt(newValue);
 		incrementer ++;
 	};
 	this.removeFromScore = function(){
 		console.log("removing from score");
-		value = value - 3;
+		var newValue = value - 3;
+		value = parseInt(newValue);
 		incrementer = 1;
 	};
 	
 	this.getScore = function(){
 		return value;
 	};
+	
+	this.setFromCookie = function(){
+		var newValue = readCookie("score");
+		value = parseInt(newValue);
+	};
 };
 
-(function(){
-	var myDeck = new Deck();
-	var myHole = new Hole(myDeck);
-	var myHand = new Hand(myDeck);
-	var myField = new Field(myDeck);
-	var myScore = new Score();
+// Cookie Helper Methods
+function createCookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function readCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+
+function eraseCookie(name) {
+	createCookie(name,"",-1);
+}
+
+
+function init(){
+	window.myDeck = new Deck();
+	window.myHole = new Hole(myDeck);
+	window.myHand = new Hand(myDeck);
+	window.myField = new Field(myDeck);
+	window.myScore = new Score();
 	
-	var $field = $("#field");
-	var $hole = $("#hole");
-	var $hand = $("#hand");
-	var $card = $(".card");
-	var $score = $("#score");
-	var $cardsLeft = $("#cardsLeft");
-	var $newHand = $("#newHand");
+	window.$field = $("#field");
+	window.$hole = $("#hole");
+	window.$hand = $("#hand");
+	window.$card = $(".card");
+	window.$score = $("#score");
+	window.$cardsLeft = $("#cardsLeft");
+	window.$fieldCard = $(".fieldCard")
+	
+	
 	
 	myDeck.shuffle();
 	myDeck.deal();
@@ -143,13 +179,20 @@ var Score = function(){
 		myHand.logCards();	
 	}
 	
+	if(readCookie("score") == null){
+		console.log("readCookie is null");
+		var currentScore = myScore.getScore();
+		createCookie("score", currentScore, 100);
+	}
+	
 	$hole.on("click", function(){
+		var currentScore = myScore.getScore();
 		myHand.receiveCard(myHole.hitHand());
 		
 		$hand.html(myHand.toHtml());
 		logCards();
 		myScore.removeFromScore();
-		$score.html(myScore.getScore());
+		updateUI();
 		if(!!myHole.checkForCards()){
 			$cardsLeft.html(myHole.checkForCards());
 		} else{
@@ -189,30 +232,33 @@ var Score = function(){
 			// If the card's face value is 1 less or 1 greater than the hand card, remove it from
 			// the field and add it to the hand.
 			if((myHand.getValue() === clickedValue + 1) || (myHand.getValue() === clickedValue - 1)){
+				var currentScore = myScore.getScore();
 				myHand.receiveCard(myField.removeCard(clickedIndex));
 				$clicked.removeClass("fieldCard").hide();
 				$hand.html(myHand.toHtml());
 				myScore.addToScore();
-				$score.html(myScore.getScore());
+				updateUI();
 			}
 			
 		} else if((!locked) && clickedValue  === 13){
 			// what to do if the clicked card is a king
+			var currentScore = myScore.getScore();
 			if((myHand.getValue() === 1) || (myHand.getValue() === clickedValue - 1)){
 				myHand.receiveCard(myField.removeCard(clickedIndex));
 				$clicked.removeClass("fieldCard").hide();
 				$hand.html(myHand.toHtml());
 				myScore.addToScore();
-				$score.html(myScore.getScore());
+				updateUI();
 			}
 		} else if((!locked) && clickedValue === 1){
 			// what to do if the clicked card is an ace
+			var currentScore = myScore.getScore();
 			if((myHand.getValue() === 13) || (myHand.getValue() === clickedValue + 1)){
 				myHand.receiveCard(myField.removeCard(clickedIndex));
 				$clicked.removeClass("fieldCard").hide();
 				$hand.html(myHand.toHtml());
 				myScore.addToScore();
-				$score.html(myScore.getScore());
+				updateUI();
 			}
 		} else{
 			console.log("this card is locked");
@@ -220,19 +266,39 @@ var Score = function(){
 			
 	});
 	
+	
+	
+};
+
+function updateUI(){
+	var currentScore = myScore.getScore();
+	var $fieldCard = $(".fieldCard");
+	var $score = $("#score");
+	$score.html(currentScore);
+	createCookie("score", currentScore, 100);
+	
+	// Let's try showng/hiding cards from here.
+	
+}
+
+(function(){
+	
+	var $newHand = $("#newHand");
 	$newHand.on("click", function(){
-		myDeck = new Deck();
-		myHole = new Hole(myDeck);
-		myHand = new Hand(myDeck);
-		myField = new Field(myDeck);
-		myDeck.shuffle();
-		myDeck.deal();
-		$field.html(myField.toHtml());
-		myHand.empty();
-		myHand.receiveCard(myHole.hitHand());
-		$hand.html(myHand.toHtml());
-		$cardsLeft.html(myHole.checkForCards());
-		console.log("You wish to have a new hand.");
+		if($(".fieldCard").length){
+			for(var i = 0; i < $(".fieldCard").length; i++){
+				myScore.removeFromScore();
+				$score.html(myScore.getScore());
+				init();
+			}
+		} else{
+			init();
+			myScore.setFromCookie();
+			updateUI();
+		}
+		
+		
 	});
+	
 	
 }());
