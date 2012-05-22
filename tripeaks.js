@@ -160,8 +160,8 @@ var Score = function(){
 	
 	$(".fieldCard").on("click", function(){
 		var $clicked = $(this);
-		var clickedTop = parseInt($clicked.css("top"));
-		var clickedLeft = parseInt($clicked.css("left"));
+		var clickedTop = parseInt($clicked.css("top"), 10);
+		var clickedLeft = parseInt($clicked.css("left"), 10);
 		var locked = false;
 		var $clickedId = $clicked.attr("id");
 		var clickedIndex = ($clickedId.split("-")[1]) - 1;
@@ -174,15 +174,15 @@ var Score = function(){
 		console.log("text: " + $clicked.attr("class"));
 		$(".fieldCard").each(function(){
 			var $this = $(this);
-			var thisTop = parseInt($this.css("top"));
-			var thisLeft = parseInt($this.css("left"));
+			var thisTop = parseInt($this.css("top"), 10);
+			var thisLeft = parseInt($this.css("left"), 10);
 			// If a card is less than 50px below and 20px to the left or 40px to the right
 			if((thisTop === (clickedTop + 40)) && ((thisLeft === (clickedLeft + 20)) || (thisLeft === (clickedLeft - 20)))){
 				locked = true;
 				
 			}
-			//console.log("top: " +parseInt($(this).css("top")));
-			//console.log("left: " +parseInt($(this).css("left")));
+			//console.log("top: " +parseInt($(this).css("top"), 10));
+			//console.log("left: " +parseInt($(this).css("left"), 10));
 			
 		});
 		if((!locked) && (clickedValue != 1) && (clickedValue != 13)){
