@@ -95,3 +95,11 @@ body{
 	cursor:pointer;
 }
 
+.fieldCard{
+	font-size:100%;
+}
+
+.back{
+	font-size:0;
+}
+

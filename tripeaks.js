@@ -237,7 +237,6 @@ function init(){
 				$clicked.removeClass("fieldCard").hide();
 				$hand.html(myHand.toHtml());
 				myScore.addToScore();
-				updateUI();
 			}
 			
 		} else if((!locked) && clickedValue  === 13){
@@ -248,7 +247,6 @@ function init(){
 				$clicked.removeClass("fieldCard").hide();
 				$hand.html(myHand.toHtml());
 				myScore.addToScore();
-				updateUI();
 			}
 		} else if((!locked) && clickedValue === 1){
 			// what to do if the clicked card is an ace
@@ -258,11 +256,11 @@ function init(){
 				$clicked.removeClass("fieldCard").hide();
 				$hand.html(myHand.toHtml());
 				myScore.addToScore();
-				updateUI();
 			}
 		} else{
 			console.log("this card is locked");
 		}
+		updateUI();
 			
 	});
 	
@@ -274,27 +272,34 @@ function updateUI(){
 	var currentScore = myScore.getScore();
 	var $fieldCard = $(".fieldCard");
 	var $score = $("#score");
+	var arrTop = [];
+	var arrLeft = [];
 	$score.html(currentScore);
 	createCookie("score", currentScore, 100);
 	
 	// Let's try showng/hiding cards from here.
-	$fieldCard.each(function(i, el){
-		console.log("in outer each");
-		var $this = $(el);
-		var $thisTop = parseInt($this.css("top"), 0);
-		var $thisLeft = parseInt($this.css("left"), 0);
-		$fieldCard.each(function(index, element){
-			var $that = $(element);
-			var $thatTop = parseInt($this.css("top"), 0);
-			var $thatLeft = parseInt($this.css("left"), 0);
-			console.log("thisTop: " + $thisTop);
-			console.log("thatTop: " + $thatTop);
-			console.log("thisLeft: " + $thisLeft);
-			console.log("thatLeft: " + $thatLeft);
-			if($thatTop == $thisTop + 40 && ($thatLeft == $thisLeft - 20 || $thatLeft == $thisLeft + 20)){
-				$this.addClass("back");
+	$fieldCard.each(function(){
+		var $thisLeft = parseInt($(this).css("left"), 10);
+		var $thisTop = parseInt($(this).css("top"), 10);
+		arrTop.push($thisTop);
+		arrLeft.push($thisLeft);
+		
+	});
+	console.log(arrLeft);
+	console.log(arrTop);
+	
+	$fieldCard.each(function(index, el){
+		var $thisTop = parseInt($(this).css("top"), 10);
+		var $thisLeft = parseInt($(this).css("left"), 10);
+		for(var i = 0; i < arrTop.length; i++){
+			if(arrTop[i] == $thisTop + 40 && (arrLeft[i] == $thisLeft + 20 || arrLeft[i] == $thisLeft - 20)){
+				$(this).addClass("back");
+				break;
+			} else {
+				$(this).removeClass("back");
 			}
-		});
+		}
+		
 	});
 	
 }
