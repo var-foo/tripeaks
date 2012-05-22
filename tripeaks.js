@@ -278,6 +278,24 @@ function updateUI(){
 	createCookie("score", currentScore, 100);
 	
 	// Let's try showng/hiding cards from here.
+	$fieldCard.each(function(i, el){
+		console.log("in outer each");
+		var $this = $(el);
+		var $thisTop = parseInt($this.css("top"), 0);
+		var $thisLeft = parseInt($this.css("left"), 0);
+		$fieldCard.each(function(index, element){
+			var $that = $(element);
+			var $thatTop = parseInt($this.css("top"), 0);
+			var $thatLeft = parseInt($this.css("left"), 0);
+			console.log("thisTop: " + $thisTop);
+			console.log("thatTop: " + $thatTop);
+			console.log("thisLeft: " + $thisLeft);
+			console.log("thatLeft: " + $thatLeft);
+			if($thatTop == $thisTop + 40 && ($thatLeft == $thisLeft - 20 || $thatLeft == $thisLeft + 20)){
+				$this.addClass("back");
+			}
+		});
+	});
 	
 }
 
