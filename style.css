@@ -24,7 +24,46 @@ body{
 
 .handCard{
 	top:215px;
-	left:350px;
+	left:430px;
+}
+/*
+#card{
+	top:215px;
+	left:380px;
+}
+*/
+#stats{
+	position:absolute;
+	top:225px;
+	left:100px;
+	color:#bf3030;
+	border:1px solid #134d13;
+	background-color:#004200;
+	padding:5px;
+}
+
+.statVal{
+	font-weight:bold;
+}
+
+#newHand{
+	position:absolute;
+	top:280px;
+	left:100px;
+	cursor:pointer;
+}
+
+#hole{
+	top:215px;
+	left:360px;
+}
+
+.fieldCard{
+	font-size:100%;
+}
+
+.back{
+	font-size:0;
 }
 
 #card-1, #card-2, #card-3{
@@ -71,35 +110,4 @@ body{
 #card-28{left:460px;}
 #card-29{left:500px;}
 #card-30{left:540px;}
-
-#hole{
-	top:215px;
-	left:280px;
-}
-
-#card{
-	top:215px;
-	left:340px;
-}
-
-#stats{
-	position:absolute;
-	top:225px;
-	left:100px;
-}
-
-#newHand{
-	position:absolute;
-	top:250px;
-	left:100px;
-	cursor:pointer;
-}
-
-.fieldCard{
-	font-size:100%;
-}
-
-.back{
-	font-size:0;
-}
 

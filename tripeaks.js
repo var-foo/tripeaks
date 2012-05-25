@@ -1,3 +1,11 @@
+var $field = $("#field");
+var $hole = $("#hole");
+var $hand = $("#hand");
+var $card = $(".card");
+var $score = $("#score");
+var $cardsLeft = $("#cardsLeft");
+var $fieldCard = $(".fieldCard");
+
 var Field = function(deck){
 	var cards = [],
 		i;
@@ -98,28 +106,28 @@ var Hand = function(deck){
 };
 
 var Score = function(){
-	var value = 0;
-	var incrementer = 1;
+	this.value = 0;
+	this.incrementer = 1;
 	
 	this.addToScore = function(){
-		var newValue = value + incrementer;
-		value = parseInt(newValue);
-		incrementer ++;
+		var newValue = this.value + this.incrementer;
+		this.value = parseInt(newValue);
+		this.incrementer ++;
 	};
 	this.removeFromScore = function(){
 		console.log("removing from score");
-		var newValue = value - 3;
-		value = parseInt(newValue);
-		incrementer = 1;
+		var newValue = this.value - 3;
+		this.value = parseInt(newValue);
+		this.incrementer = 1;
 	};
 	
 	this.getScore = function(){
-		return value;
+		return this.value;
 	};
 	
 	this.setFromCookie = function(){
 		var newValue = readCookie("score");
-		value = parseInt(newValue);
+		this.value = parseInt(newValue);
 	};
 };
 
@@ -157,13 +165,7 @@ function init(){
 	window.myField = new Field(myDeck);
 	window.myScore = new Score();
 	
-	window.$field = $("#field");
-	window.$hole = $("#hole");
-	window.$hand = $("#hand");
-	window.$card = $(".card");
-	window.$score = $("#score");
-	window.$cardsLeft = $("#cardsLeft");
-	window.$fieldCard = $(".fieldCard")
+	
 	
 	
 	
@@ -224,8 +226,6 @@ function init(){
 				locked = true;
 				
 			}
-			//console.log("top: " +parseInt($(this).css("top"), 10));
-			//console.log("left: " +parseInt($(this).css("left"), 10));
 			
 		});
 		if((!locked) && (clickedValue != 1) && (clickedValue != 13)){
@@ -304,24 +304,30 @@ function updateUI(){
 	
 }
 
+function reset(){
+	var currentScore = myScore.getScore();
+	$hole.off();
+	$fieldCard.off();
+	for(var i = 0; i < $(".fieldCard").length; i++){
+		myScore.removeFromScore();
+	}
+	console.log(myScore.value);
+	createCookie("score", myScore.value, 100);
+	init();
+	myScore.setFromCookie();
+	updateUI();
+	$hole.show();
+}
+
 (function(){
 	
 	var $newHand = $("#newHand");
 	$newHand.on("click", function(){
-		if($(".fieldCard").length){
-			for(var i = 0; i < $(".fieldCard").length; i++){
-				myScore.removeFromScore();
-				$score.html(myScore.getScore());
-				init();
-			}
-		} else{
-			init();
-			myScore.setFromCookie();
-			updateUI();
-		}
-		
-		
+		console.log("Reset");
+		reset();
 	});
-	
+	init();
+	myScore.setFromCookie();
+	updateUI();
 	
 }());
