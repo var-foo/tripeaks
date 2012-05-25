@@ -16,9 +16,6 @@ var Field = function(deck){
 		};
 	};
 	
-	this.logCards = function(){
-		console.log("Field cards: " + cards.length);
-	};
 	this.receiveCard = function(card){
 		cards.push(card);
 	};
@@ -42,7 +39,8 @@ var Field = function(deck){
 };
 
 var Hole = function(deck){
-	var cards = [];
+	var cards = [],
+		i;
 	
 	this.init = function(){
 		cards = [];
@@ -50,9 +48,6 @@ var Hole = function(deck){
 			cards.push(deck.deal());
 		};
 	};
-	this.logCards = function(){
-		console.log("Hole cards: " + cards.length);
-	}
 	this.hitHand = function(){
 		return cards.pop();
 	};
@@ -81,9 +76,6 @@ var Hand = function(deck){
 	
 	this.receiveCard = function(card){
 		cards.push(card);
-	};
-	this.logCards = function(){
-		console.log("Hand cards: " + cards.length);
 	};
 	this.toHtml = function(){
 		var arrayOut = [],
@@ -115,7 +107,6 @@ var Score = function(){
 		this.incrementer ++;
 	};
 	this.removeFromScore = function(){
-		console.log("removing from score");
 		var newValue = parseInt(this.value, 10) - 3;
 		this.value = parseInt(newValue, 10);
 		this.incrementer = 1;
@@ -175,14 +166,8 @@ function init(){
 	myHand.receiveCard(myHole.hitHand());
 	$hand.html(myHand.toHtml());
 	$cardsLeft.html(myHole.checkForCards());
-	var logCards = function(){
-		myField.logCards();
-		myHole.logCards();
-		myHand.logCards();	
-	}
 	
 	if(readCookie("score") == null){
-		console.log("readCookie is null");
 		var currentScore = myScore.getScore();
 		createCookie("score", currentScore, 100);
 	}
@@ -192,7 +177,6 @@ function init(){
 		myHand.receiveCard(myHole.hitHand());
 		
 		$hand.html(myHand.toHtml());
-		logCards();
 		myScore.removeFromScore();
 		updateUI();
 		if(!!myHole.checkForCards()){
@@ -205,60 +189,47 @@ function init(){
 	
 	$(".fieldCard").on("click", function(){
 		var $clicked = $(this);
-		var clickedTop = parseInt($clicked.css("top"), 10);
-		var clickedLeft = parseInt($clicked.css("left"), 10);
-		var locked = false;
+		var locked;
 		var $clickedId = $clicked.attr("id");
 		var clickedIndex = ($clickedId.split("-")[1]) - 1;
 		var clickedValue = (myField.returnCard(clickedIndex)).getNumber();
+		var handVal = myHand.getValue();
 		
-		var handValue;
+		var success = function(){
+			var currentScore = myScore.getScore();
+			myHand.receiveCard(myField.removeCard(clickedIndex));
+			$clicked.removeClass("fieldCard").hide();
+			$hand.html(myHand.toHtml());
+			myScore.addToScore();
+		}
+		//Define an easy way to tell if a card is face-down, and if it is, "lock" the card
+		if($clicked.hasClass("back")){
+			locked = true;
+		}
 		
-		console.log("index: " + clickedIndex);
-		console.log("value: " + clickedValue);
-		console.log("text: " + $clicked.attr("class"));
-		$(".fieldCard").each(function(){
-			var $this = $(this);
-			var thisTop = parseInt($this.css("top"), 10);
-			var thisLeft = parseInt($this.css("left"), 10);
-			// If a card is less than 50px below and 20px to the left or 40px to the right
-			if((thisTop === (clickedTop + 40)) && ((thisLeft === (clickedLeft + 20)) || (thisLeft === (clickedLeft - 20)))){
-				locked = true;
+		//if the clicked card isn't locked...
+		if(!locked){
+			// ...and it's not an ace or a king...
+			if((clickedValue != 1) && (clickedValue != 13)){
+				// ...and the card's face value is 1 less or 1 greater than the hand card, remove it from
+				// the field and add it to the hand.
+				if((handVal === clickedValue + 1) || (handVal === clickedValue - 1)){
+					success();
+				}
 				
-			}
-			
-		});
-		if((!locked) && (clickedValue != 1) && (clickedValue != 13)){
-			// If the card's face value is 1 less or 1 greater than the hand card, remove it from
-			// the field and add it to the hand.
-			if((myHand.getValue() === clickedValue + 1) || (myHand.getValue() === clickedValue - 1)){
+			} else if(clickedValue  === 13){
+				// what to do if the clicked card is a king
 				var currentScore = myScore.getScore();
-				myHand.receiveCard(myField.removeCard(clickedIndex));
-				$clicked.removeClass("fieldCard").hide();
-				$hand.html(myHand.toHtml());
-				myScore.addToScore();
+				
+				if((handVal === 1) || (handVal === clickedValue - 1)){
+					success();
+				}
+			} else if(clickedValue === 1){
+				// what to do if the clicked card is an ace
+				if((handVal === 13) || (myHand.getValue() === clickedValue + 1)){
+					success();
+				}
 			}
-			
-		} else if((!locked) && clickedValue  === 13){
-			// what to do if the clicked card is a king
-			var currentScore = myScore.getScore();
-			if((myHand.getValue() === 1) || (myHand.getValue() === clickedValue - 1)){
-				myHand.receiveCard(myField.removeCard(clickedIndex));
-				$clicked.removeClass("fieldCard").hide();
-				$hand.html(myHand.toHtml());
-				myScore.addToScore();
-			}
-		} else if((!locked) && clickedValue === 1){
-			// what to do if the clicked card is an ace
-			var currentScore = myScore.getScore();
-			if((myHand.getValue() === 13) || (myHand.getValue() === clickedValue + 1)){
-				myHand.receiveCard(myField.removeCard(clickedIndex));
-				$clicked.removeClass("fieldCard").hide();
-				$hand.html(myHand.toHtml());
-				myScore.addToScore();
-			}
-		} else{
-			console.log("this card is locked");
 		}
 		updateUI();
 			
@@ -292,11 +263,13 @@ function updateUI(){
 		var $thisTop = parseInt($(this).css("top"), 10);
 		var $thisLeft = parseInt($(this).css("left"), 10);
 		for(var i = 0; i < arrTop.length; i++){
+			var $this = $(this);
 			if(arrTop[i] == $thisTop + 40 && (arrLeft[i] == $thisLeft + 20 || arrLeft[i] == $thisLeft - 20)){
-				$(this).addClass("back");
+				
+				$this.removeClass("front").addClass("back");
 				break;
 			} else {
-				$(this).removeClass("back");
+				$this.removeClass("back").addClass("front");
 			}
 		}
 		
