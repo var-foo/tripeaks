@@ -1,5 +1,5 @@
 body{
-	background-color:#006600;
+	background:url(images/body.jpg) no-repeat center 0 #120902;
 }
 
 #wrapper{
@@ -11,11 +11,17 @@ body{
 }
 
 .card, .handCard, #hole{
-	background-color:#234567;
 	width:40px;
 	height:60px;
 	position:absolute;
-	border:1px solid #000;
+	border:1px solid #666;
+	border-radius:3px;
+	background-color:#fff;
+}
+
+.back, #hole.back{
+	
+	background-color:#234567;
 }
 
 .card:hover, .handCard:hover, #hole:hover{
@@ -36,9 +42,10 @@ body{
 	position:absolute;
 	top:225px;
 	left:100px;
-	color:#bf3030;
-	border:1px solid #134d13;
-	background-color:#004200;
+	color:#04A1F2;
+	border:1px solid #04A1F2;
+	-moz-border-radius:5px;
+	border-radius:5px;
 	padding:5px;
 }
 
@@ -51,6 +58,36 @@ body{
 	top:280px;
 	left:100px;
 	cursor:pointer;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: #ffffff;
+	padding: 5px 10px;
+	background: -moz-linear-gradient(
+		top,
+		#a3a3a3 0%,
+		#3b3b3b 50%,
+		#242424 50%,
+		#000000);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#a3a3a3),
+		color-stop(0.50, #3b3b3b),
+		color-stop(0.50, #242424),
+		to(#000000));
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border: 1px solid #000000;
+	-moz-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 1px rgba(255,255,255,0.6);
+	-webkit-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 1px rgba(255,255,255,0.6);
+	text-shadow:
+		0px -1px 0px rgba(000,000,000,1),
+		0px 1px 0px rgba(255,255,255,0.2);
+
 }
 
 #hole{

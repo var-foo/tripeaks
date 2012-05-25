@@ -110,14 +110,14 @@ var Score = function(){
 	this.incrementer = 1;
 	
 	this.addToScore = function(){
-		var newValue = this.value + this.incrementer;
-		this.value = parseInt(newValue);
+		var newValue = parseInt(this.value, 10) + parseInt(this.incrementer, 10);
+		this.value = parseInt(newValue, 10);
 		this.incrementer ++;
 	};
 	this.removeFromScore = function(){
 		console.log("removing from score");
-		var newValue = this.value - 3;
-		this.value = parseInt(newValue);
+		var newValue = parseInt(this.value, 10) - 3;
+		this.value = parseInt(newValue, 10);
 		this.incrementer = 1;
 	};
 	
@@ -126,8 +126,8 @@ var Score = function(){
 	};
 	
 	this.setFromCookie = function(){
-		var newValue = readCookie("score");
-		this.value = parseInt(newValue);
+		var newValue = parseInt(readCookie("score"), 10);
+		this.value = parseInt(newValue, 10);
 	};
 };
 
