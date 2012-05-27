@@ -7,7 +7,7 @@ var Field = function(deck){
 			cards.push(deck.deal());
 		};
 	};
-	
+
 	this.logCards = function(){
 		console.log("Field cards: " + cards.length);
 	};
@@ -26,16 +26,14 @@ var Field = function(deck){
 		return arrayOut.join('');
 	};
 	this.removeCard = function(index){
-		var card = cards[index];
-		//cards.splice(index, 1);
-		return card;
+		return cards[index];
 	};
 	this.init();
 };
 
 var Hole = function(deck){
 	var cards = [];
-	
+
 	this.init = function(){
 		cards = [];
 		for(i = 0; i < 22; i++){
@@ -52,7 +50,7 @@ var Hole = function(deck){
 		cards.push(card);
 	};
 	this.giveCard = function(){
-		return cards.pop();
+		return this.hitHand();
 	};
 	this.checkForCards = function(){
 		return cards.length;
@@ -70,7 +68,7 @@ var Hole = function(deck){
 
 var Hand = function(deck){
 	var cards = [];
-	
+
 	this.receiveCard = function(card){
 		cards.push(card);
 	};
@@ -81,7 +79,7 @@ var Hand = function(deck){
 		var arrayOut = [],
 			i,
 			topCard = cards.length - 1;
-		
+
 		arrayOut.push('<div class="card handCard ',cards[topCard].getSuit(),' ',cards[topCard].getNumber(),'">',cards[topCard].getName(),'</div>');
 		return arrayOut.join('');
 	};
@@ -100,7 +98,7 @@ var Hand = function(deck){
 var Score = function(){
 	var value = 0;
 	var incrementer = 1;
-	
+
 	this.addToScore = function(){
 		value = value + incrementer;
 		incrementer ++;
@@ -110,7 +108,7 @@ var Score = function(){
 		value = value - 3;
 		incrementer = 1;
 	};
-	
+
 	this.getScore = function(){
 		return value;
 	};
@@ -122,7 +120,7 @@ var Score = function(){
 	var myHand = new Hand(myDeck);
 	var myField = new Field(myDeck);
 	var myScore = new Score();
-	
+
 	var $field = $("#field");
 	var $hole = $("#hole");
 	var $hand = $("#hand");
@@ -130,7 +128,7 @@ var Score = function(){
 	var $score = $("#score");
 	var $cardsLeft = $("#cardsLeft");
 	var $newHand = $("#newHand");
-	
+
 	myDeck.shuffle();
 	myDeck.deal();
 	$field.html(myField.toHtml());
@@ -140,12 +138,12 @@ var Score = function(){
 	var logCards = function(){
 		myField.logCards();
 		myHole.logCards();
-		myHand.logCards();	
-	}
-	
+		myHand.logCards();
+	};
+
 	$hole.on("click", function(){
 		myHand.receiveCard(myHole.hitHand());
-		
+
 		$hand.html(myHand.toHtml());
 		logCards();
 		myScore.removeFromScore();
@@ -155,9 +153,9 @@ var Score = function(){
 		} else{
 			$hole.hide();
 		}
-		
+
 	});
-	
+
 	$(".fieldCard").on("click", function(){
 		var $clicked = $(this);
 		var clickedTop = parseInt($clicked.css("top"));
@@ -166,9 +164,9 @@ var Score = function(){
 		var $clickedId = $clicked.attr("id");
 		var clickedIndex = ($clickedId.split("-")[1]) - 1;
 		var clickedValue = (myField.returnCard(clickedIndex)).getNumber();
-		
+
 		var handValue;
-		
+
 		console.log("index: " + clickedIndex);
 		console.log("value: " + clickedValue);
 		console.log("text: " + $clicked.attr("class"));
@@ -179,11 +177,11 @@ var Score = function(){
 			// If a card is less than 50px below and 20px to the left or 40px to the right
 			if((thisTop === (clickedTop + 40)) && ((thisLeft === (clickedLeft + 20)) || (thisLeft === (clickedLeft - 20)))){
 				locked = true;
-				
+
 			}
 			//console.log("top: " +parseInt($(this).css("top")));
 			//console.log("left: " +parseInt($(this).css("left")));
-			
+
 		});
 		if((!locked) && (clickedValue != 1) && (clickedValue != 13)){
 			// If the card's face value is 1 less or 1 greater than the hand card, remove it from
@@ -195,7 +193,7 @@ var Score = function(){
 				myScore.addToScore();
 				$score.html(myScore.getScore());
 			}
-			
+
 		} else if((!locked) && clickedValue  === 13){
 			// what to do if the clicked card is a king
 			if((myHand.getValue() === 1) || (myHand.getValue() === clickedValue - 1)){
@@ -217,9 +215,9 @@ var Score = function(){
 		} else{
 			console.log("this card is locked");
 		}
-			
+
 	});
-	
+
 	$newHand.on("click", function(){
 		myDeck = new Deck();
 		myHole = new Hole(myDeck);
@@ -234,5 +232,5 @@ var Score = function(){
 		$cardsLeft.html(myHole.checkForCards());
 		console.log("You wish to have a new hand.");
 	});
-	
+
 }());
