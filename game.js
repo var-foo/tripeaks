@@ -53,7 +53,7 @@ var Card = function (suit, number){
         }
         return value;
     };
-    /** @returns {String} The full name of the card. "Ace of Spades" */
+    /** @returns {String} The name of the card. "Ace" */
     this.getName = function (){
         var cardName = '';
         switch (number){
@@ -73,7 +73,11 @@ var Card = function (suit, number){
                 cardName = number;
                 break;
         }
-        return cardName+this.getSymbol();
+        return cardName;
+    };
+    /** @returns {String} The full name of the card. "Ace of Spades" */
+    this.getFullName = function (){
+        return this.getName()+this.getSymbol();
     };
 };
 /** @constructor */
@@ -96,7 +100,9 @@ var Deck = function (){
      * @returns {Array} An array of Cards representing the shuffled version of the deck.
      */
     this.shuffle = function (){
-        for(var j, x, i = cards.length; i; j = parseInt(Math.random() * i), x = cards[--i], cards[i] = cards[j], cards[j] = x);
+        for(var j, x, i = cards.length; i; j = parseInt(Math.random() * i, 10), x = cards[--i], cards[i] = cards[j], cards[j] = x){
+			// Crazy shuffle routine.
+        }
         return this.getCards();
     };
     /** @returns {Array} An array of cards representing the Deck. */
@@ -104,21 +110,22 @@ var Deck = function (){
         return cards;
     };
     /** @returns {Card} Deals the top card off the deck. Removes it from the Deck. */
-    this.deal = function (){
-    	this.shuffle();
+    this.deal = function (myHole){
+		var i;
+		this.shuffle();
         if (!cards.length){
             console.log("Ran out of cards, new deck");
             newCards();
             this.shuffle();
         }
-        for(var i = 0; i <31; i++){
-        	return cards.pop();
+        for(i = 0; i <31; i++){
+			return this.hit();
         }
-        for(var i = 0; i < this.cards.length; i++){
-        	myHole.receiveCard(cards.pop());
+        for(i = 0; i < this.cards.length; i++){
+			myHole.receiveCard(this.hit());
         }
     };
     this.hit = function(){
-    	return cards.pop();
-    }
+		return cards.pop();
+    };
 };
