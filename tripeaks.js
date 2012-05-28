@@ -5,6 +5,9 @@ function init() {
     window.myField = new Field(myDeck);
     window.myScore = new Score();
     window.myCookie = new TPCookie();
+    
+    var currentScore = myScore.getScore();
+    
     myDeck.shuffle();
     myDeck.deal();
     $field.html(myField.toHtml());
@@ -13,12 +16,11 @@ function init() {
     $cardsLeft.html(myHole.checkForCards());
 
     if (myCookie.read("score") == null) {
-        var currentScore = myScore.getScore();
         myCookie.create("score", currentScore, 100);
     }
 
     $hole.on("click", function () {
-        var currentScore = myScore.getScore();
+        //var currentScore = myScore.getScore();
         myHand.receiveCard(myHole.hitHand());
         $hand.html(myHand.toHtml());
         myScore.removeFromScore();
@@ -88,7 +90,8 @@ function updateUI() {
     var $score = $("#score");
     var arrTop = [];
     var arrLeft = [];
-    $score.html(currentScore);
+    $score.text(currentScore);
+    console.log();
     myCookie.create("score", currentScore, 100);
 
     // Two .each loops on the same collection of nodes seems strange,
@@ -145,7 +148,10 @@ function reset() {
         reset();
     });
     init();
-    myScore.setFromCookie();
+    if(myCookie.read("score")){
+    	myScore.setFromCookie();	
+    }
+    
     updateUI();
 
 }());
