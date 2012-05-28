@@ -32,7 +32,7 @@ var Field = function (deck) {
             var arrayOut = [],
                 i;
             for (i = 0; i < cards.length; i++) {
-                arrayOut.push('<div id="card-', i + 1, '" class="card fieldCard ', cards[i].getSuit(), ' ', cards[i].getNumber(), '">', cards[i].getName(), '</div>');
+                arrayOut.push('<img id="card-',  i + 1, '" class="card fieldCard" src="images/cards/default/',String(cards[i].getName()).toLowerCase(),'_of_',cards[i].getSuit().toLowerCase(),'.png" alt="',cards[i].getFullName(),'" />');
             }
             return arrayOut.join('');
         };
@@ -74,7 +74,7 @@ var Hole = function (deck) {
             var arrayOut = [],
                 i;
             for (i = 0; i < cards.length; i++) {
-                arrayOut.push('<div class="card ', cards[i].getSuit(), ' ', cards[i].getNumber(), '">', cards[i].getName(), '</div>');
+                arrayOut.push('<img class="card" src="images/cards/default/',String(cards[i].getName()).toLowerCase(),'_of_',cards[i].getSuit().toLowerCase(),'.png" alt="',cards[i].getFullName(),'" />');
             }
             return arrayOut.join('');
         };
@@ -99,7 +99,7 @@ var Hand = function (deck) {
             var cardNumber = cards[topCard].getNumber();
             var cardName = cards[topCard].getName();
 
-            arrayOut.push('<div class="card handCard ', cardSuit, ' ', cardNumber, '">', cardName, '</div>');
+            arrayOut.push('<img class="card handCard" src="images/cards/default/',String(cards[topCard].getName()).toLowerCase(),'_of_',cards[topCard].getSuit().toLowerCase(),'.png" alt="',cards[topCard].getFullName(),'" />');
             return arrayOut.join('');
         };
         this.getTopCard = function () {
