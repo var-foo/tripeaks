@@ -147,3 +147,34 @@ body{
 #card-28{left:460px;}
 #card-29{left:500px;}
 #card-30{left:540px;}
+<<<<<<< HEAD
+
+<<<<<<< HEAD
+#hole{
+	top:215px;
+	left:280px;
+}
+
+#card{
+	top:215px;
+	left:340px;
+}
+
+#stats{
+	position:absolute;
+	top:225px;
+	left:100px;
+}
+
+#newHand{
+	position:absolute;
+	top:250px;
+	left:100px;
+	cursor:pointer;
+}
+=======
+>>>>>>> refs/remotes/upstream/master
+
+.Diamonds, .Hearts {color:red;}
+=======
+>>>>>>> upstream/master
