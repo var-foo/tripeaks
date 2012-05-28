@@ -10,6 +10,10 @@ body{
 	height:400px;
 }
 
+.Diamonds, .Hearts{
+	color:red;
+}
+
 .card, .handCard, #hole{
 	width:40px;
 	height:60px;
@@ -147,5 +151,3 @@ body{
 #card-28{left:460px;}
 #card-29{left:500px;}
 #card-30{left:540px;}
-
-.Diamonds, .Hearts {color:red;}
