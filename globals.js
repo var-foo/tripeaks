@@ -116,17 +116,17 @@ var Hand = function (deck) {
  * @constructor
  */
 var Score = function () {
-    this.value = 0;
+    this.value = 100;
     this.incrementer = 1;
 
     this.addToScore = function () {
         var newValue = this.value + this.incrementer;
-        this.value = parseInt(newValue, 10);
+        this.value = newValue;
         this.incrementer++;
     };
     this.removeFromScore = function () {
         var newValue = this.value - 3;
-        this.value = parseInt(newValue, 10);
+        this.value = newValue;
         this.incrementer = 1;
     };
 
@@ -135,7 +135,7 @@ var Score = function () {
     };
 
     this.setFromCookie = function () {
-        var newValue = parseInt(myCookie.read("score"), 10);
+        var newValue = myCookie.read("score");
         this.value = newValue;
     };
 };

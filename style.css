@@ -10,6 +10,10 @@ body{
 	height:400px;
 }
 
+.Diamonds, .Hearts{
+	color:red;
+}
+
 .card, .handCard, #hole{
 	width:40px;
 	height:60px;
