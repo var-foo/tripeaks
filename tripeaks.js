@@ -89,7 +89,7 @@ function updateUI() {
     var arrTop = [];
     var arrLeft = [];
     $score.text(currentScore);
-    console.log();
+    fieldPosition();
     myCookie.create("score", currentScore, 100);
 
     // Two .each loops on the same collection of nodes seems strange,

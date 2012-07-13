@@ -42,7 +42,7 @@ var Field = function (deck) {
             var arrayOut = [],
                 i;
             for (i = 0; i < cards.length; i++) {
-                arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard ',cards[i].getSuit().toLowerCase(),' val_',String(cards[i].getName()).toLowerCase(),'" />');
+                arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard" data-card="',cards[i].getSuit().toLowerCase(),'_',String(cards[i].getName()).toLowerCase(),'" />');
             }
             return arrayOut.join('');
         };
@@ -97,7 +97,7 @@ var Hole = function (deck) {
             var arrayOut = [],
                 i;
             for (i = 0; i < cards.length; i++) {
-                arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard ',cards[i].getSuit().toLowerCase(),' val_',String(cards[i].getName()).toLowerCase(),'" />');
+                arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard" data-card="',cards[i].getSuit().toLowerCase(),'_',String(cards[i].getName()).toLowerCase(),'" />');
             }
             return arrayOut.join('');
         };
@@ -126,7 +126,7 @@ var Hand = function (deck) {
             var cardName = cards[topCard].getName();
 
            
-     	   arrayOut.push('<div class="card handCard front ',cards[topCard].getSuit().toLowerCase(),' val_',String(cards[topCard].getName()).toLowerCase(),'" />');
+            arrayOut.push('<div class="card front handCard" data-card="',cards[topCard].getSuit().toLowerCase(),'_',String(cards[topCard].getName()).toLowerCase(),'" />');
 
             return arrayOut.join('');
         };
