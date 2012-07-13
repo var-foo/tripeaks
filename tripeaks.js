@@ -42,19 +42,17 @@ function init() {
         var handVal = myHand.getValue();
 
         var success = function () {
-                var currentScore = myScore.getScore();
-                myHand.receiveCard(myField.removeCard(clickedIndex));
-                $clicked.removeClass("fieldCard").hide();
-                $hand.html(myHand.toHtml());
-                myScore.addToScore();
-            }
-            //Define an easy way to tell if a card is face-down, and if it is, "lock" the card
-        if ($clicked.hasClass("back")) {
-            locked = true;
+            var currentScore = myScore.getScore();
+            myHand.receiveCard(myField.removeCard(clickedIndex));
+            $clicked.removeClass("fieldCard").hide();
+            $hand.html(myHand.toHtml());
+            myScore.addToScore();
         }
+        //Define an easy way to tell if a card is face-down, and if it is, "lock" the card
+        
 
-        //if the clicked card isn't locked...
-        if (!locked) {
+        //if the clicked card is visible...
+        if (!$clicked.hasClass("back")) {
             // ...and it's not an ace or a king...
             if ((clickedValue != 1) && (clickedValue != 13)) {
                 // ...and the card's face value is 1 less or 1 greater than the hand card, remove it from
@@ -140,7 +138,7 @@ function reset() {
     $hole.show();
 }
 
-//Stuff in here only runs once...
+//Stuff in here only runs exactly one time per page load...
 (function () {
 
     var $newHand = $("#newHand");

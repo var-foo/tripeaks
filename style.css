@@ -1,3 +1,4 @@
+/* The table */
 body{
 	background:url(images/body.jpg) no-repeat center 0 #120902;
 }
@@ -10,38 +11,6 @@ body{
 	height:400px;
 }
 
-.Diamonds, .Hearts{
-	color:red;
-}
-
-.card, .handCard, #hole{
-	width:40px;
-	height:60px;
-	position:absolute;
-	border:1px solid #666;
-	border-radius:3px;
-	background-color:#fff;
-}
-
-.back, #hole.back{
-	
-	background-color:#234567;
-}
-
-.card:hover, .handCard:hover, #hole:hover{
-	cursor:pointer;
-}
-
-.handCard{
-	top:215px;
-	left:430px;
-}
-/*
-#card{
-	top:215px;
-	left:380px;
-}
-*/
 #stats{
 	position:absolute;
 	top:225px;
@@ -99,14 +68,7 @@ body{
 	left:360px;
 }
 
-.fieldCard{
-	font-size:100%;
-}
-
-.back{
-	font-size:0;
-}
-
+/* Positioning the field */
 #card-1, #card-2, #card-3{
 	top:10px;
 }
@@ -151,3 +113,85 @@ body{
 #card-28{left:460px;}
 #card-29{left:500px;}
 #card-30{left:540px;}
+
+/* The Cards */
+.card, .handCard, #hole{
+	width:40px;
+	height:59px;
+	position:absolute;
+	border:1px solid #666;
+	border-radius:3px;
+	background-color:#fff;
+}
+
+.back, #hole.back{
+	
+	background-color:#234567;
+}
+
+.card:hover, .handCard:hover, #hole:hover{
+	cursor:pointer;
+}
+
+.handCard{
+	top:215px;
+	left:430px;
+}
+
+/* Setting the card faces */
+.front{
+	background:url(images/cards/cards.png) no-repeat 0 0 #fff;
+}
+
+.clubs{
+	background-position-x:0;
+}
+.diamonds{
+	background-position-x:-40px;
+}
+.hearts{
+	background-position-x:-80px;
+}
+.spades{
+	background-position-x:-120px;
+}
+
+.val_2{
+	background-position-y:0;
+}
+.val_3{
+	background-position-y:-59px;
+}
+.val_4{
+	background-position-y:-118px;
+}
+.val_5{
+	background-position-y:-177px;
+}
+.val_6{
+	background-position-y:-236px;
+}
+.val_7{
+	background-position-y:-295px;
+}
+.val_8{
+	background-position-y:-354px;
+}
+.val_9{
+	background-position-y:-413px;
+}
+.val_10{
+	background-position-y:-472px;
+}
+.val_j{
+	background-position-y:-531px;
+}
+.val_q{
+	background-position-y:-590px;
+}
+.val_k{
+	background-position-y:-649px;
+}
+.val_a{
+	background-position-y:-708px;
+}

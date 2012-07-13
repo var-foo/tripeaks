@@ -9,7 +9,7 @@ var $fieldCard = $(".fieldCard");
 
 /**
  * Field is the peaks themselves. This does not include the hole or hand.
- * @constructor
+ * @namespace
  * @param deck {string} The name of the deck you want to deal from.
  */
 var Field = function (deck) {
@@ -21,21 +21,35 @@ var Field = function (deck) {
                     cards.push(deck.deal());
                 }
             };
-
+		/**
+		 * accepts a card and adds it to the cards array
+		 * @param card {object} the card being received by the field 
+		 */
         this.receiveCard = function (card) {
             cards.push(card);
         };
+        /**
+         * returns a single card object in the array
+         * @param index {number} the index of the card in the cards array
+         */
         this.returnCard = function (index) {
             return cards[index];
         };
+        /**
+         * Creates a div for each card in the cards array.
+         */
         this.toHtml = function () {
             var arrayOut = [],
                 i;
             for (i = 0; i < cards.length; i++) {
-                arrayOut.push('<img id="card-',  i + 1, '" class="card fieldCard" src="images/cards/default/',String(cards[i].getName()).toLowerCase(),'_of_',cards[i].getSuit().toLowerCase(),'.png" alt="',cards[i].getFullName(),'" />');
+                arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard ',cards[i].getSuit().toLowerCase(),' val_',String(cards[i].getName()).toLowerCase(),'" />');
             }
             return arrayOut.join('');
         };
+        /**
+         * removes a single card from the cards array
+         * @param index {number} the index of the card in the cards array that you want to remove
+         */
         this.removeCard = function (index) {
             var card = cards[index];
             return card;
@@ -45,28 +59,37 @@ var Field = function (deck) {
 
 /**
  * Hole is the deck itself.
- * @constructor
+ * @namespace
  * @param deck {string} The name of the deck to deal from.
  */
 var Hole = function (deck) {
         var cards = [],
             i;
-
+		/** @constructor */
         this.init = function () {
             cards = [];
             for (i = 0; i < 22; i++) {
                 cards.push(deck.deal());
             }
         };
+        /**
+         * pops the top card off of the stack
+         */
         this.hitHand = function () {
             return cards.pop();
         };
+        /**
+         * puts a new card object into the cards array
+         * @param card {object} the card you want to push to the hole
+         */
         this.receiveCard = function (card) {
             cards.push(card);
         };
+   		/** @depricated */
         this.giveCard = function () {
             return cards.pop();
         };
+        /** returns the total number of card objects in the cards array */
         this.checkForCards = function () {
             return cards.length;
         };
@@ -74,7 +97,7 @@ var Hole = function (deck) {
             var arrayOut = [],
                 i;
             for (i = 0; i < cards.length; i++) {
-                arrayOut.push('<img class="card" src="images/cards/default/',String(cards[i].getName()).toLowerCase(),'_of_',cards[i].getSuit().toLowerCase(),'.png" alt="',cards[i].getFullName(),'" />');
+                arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard ',cards[i].getSuit().toLowerCase(),' val_',String(cards[i].getName()).toLowerCase(),'" />');
             }
             return arrayOut.join('');
         };
@@ -83,12 +106,15 @@ var Hole = function (deck) {
 
 /**
  * Hand is the face-up cards you play on the Field from.
- * @constructor
+ * @namespace
  * @param deck {string} The deck to deal from.
  */
 var Hand = function (deck) {
         var cards = [];
-
+		
+		/**
+		 * @param card {object} the card that is being received
+		 */
         this.receiveCard = function (card) {
             cards.push(card);
         };
@@ -99,7 +125,9 @@ var Hand = function (deck) {
             var cardNumber = cards[topCard].getNumber();
             var cardName = cards[topCard].getName();
 
-            arrayOut.push('<img class="card handCard" src="images/cards/default/',String(cards[topCard].getName()).toLowerCase(),'_of_',cards[topCard].getSuit().toLowerCase(),'.png" alt="',cards[topCard].getFullName(),'" />');
+           
+     	   arrayOut.push('<div class="card handCard front ',cards[topCard].getSuit().toLowerCase(),' val_',String(cards[topCard].getName()).toLowerCase(),'" />');
+
             return arrayOut.join('');
         };
         this.getTopCard = function () {
@@ -113,7 +141,7 @@ var Hand = function (deck) {
 
 /**
  * Score is the player's... score.
- * @constructor
+ * @namespace
  */
 var Score = function () {
     this.value = 100;
@@ -141,6 +169,12 @@ var Score = function () {
 };
 
 var TPCookie = function () {
+	
+	/**
+	 * @param name {string} the name of the cookie you want to create
+	 * @param value {number} the value of the score you want to set
+	 * @param days {number} the number of days to store the cookie
+	 */
     this.create = function (name, value, days) {
     	var expires;
         if (days) {
@@ -152,7 +186,10 @@ var TPCookie = function () {
         }
         document.cookie = name + "=" + value + expires + "; path=/";
     };
-
+	
+	/**
+	 * @param name {string} the name of the cookie you want to read
+	 */
     this.read = function (name) {
         var nameEQ = name + "=";
         var ca = document.cookie.split(';');
@@ -167,7 +204,10 @@ var TPCookie = function () {
         }
         return null;
     };
-
+	
+	/**
+	 * @param name {string} the name of the cookie you want to erase
+	 */
     this.erase = function (name) {
         myCookie.create(name, "", -1);
     };
