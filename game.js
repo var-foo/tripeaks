@@ -356,16 +356,16 @@ function cardPosition(suit, num) {
 
 	switch (suit) {
 	case "clubs":
-		posX = "0";
+		posX = "-1px";
 		break;
 	case "diamonds":
-		posX = "-40px";
+		posX = "-100px";
 		break;
 	case "hearts":
-		posX = "-80px";
+		posX = "-199px";
 		break;
 	case "spades":
-		posX = "-120px";
+		posX = "-298px";
 		break;
 	}
 	switch (num) {
@@ -373,40 +373,40 @@ function cardPosition(suit, num) {
 		posY = "0";
 		break;
 	case "3":
-		posY = "-59px";
+		posY = "-146px";
 		break;
 	case "4":
-		posY = "-118px";
+		posY = "-291px";
 		break;
 	case "5":
-		posY = "-177px";
+		posY = "-435px";
 		break;
 	case "6":
-		posY = "-236px";
+		posY = "-581px";
 		break;
 	case "7":
-		posY = "-295px";
+		posY = "-726px";
 		break;
 	case "8":
-		posY = "-354px";
+		posY = "-871px";
 		break;
 	case "9":
-		posY = "-413px";
+		posY = "-1016px";
 		break;
 	case "10":
-		posY = "-472px";
+		posY = "-1161px";
 		break;
 	case "j":
-		posY = "-531px";
+		posY = "-1305px";
 		break;
 	case "q":
-		posY = "-590px";
+		posY = "-1451px";
 		break;
 	case "k":
-		posY = "-649px";
+		posY = "-1596px";
 		break;
 	case "a":
-		posY = "-708px";
+		posY = "-1741px";
 		break;
 	}
 	bgp = posX + " " + posY;
@@ -535,7 +535,7 @@ function updateUI() {
         var $thisLeft = parseInt($(this).css("left"), 10);
         for (var i = 0; i < arrTop.length; i++) {
             var $this = $(this);
-            if (arrTop[i] == $thisTop + 40 && (arrLeft[i] == $thisLeft + 20 || arrLeft[i] == $thisLeft - 20)) {
+            if (arrTop[i] == $thisTop + 75 && (arrLeft[i] == $thisLeft + 50 || arrLeft[i] == $thisLeft - 50)) {
 
                 $this.removeClass("front").addClass("back");
                 break;
