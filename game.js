@@ -136,6 +136,8 @@ var $field = $("#field"),
     $hand = $("#hand"),
     $card = $(".card"),
     $score = $("#score"),
+    $currentRun = $("#currentRun");
+    $bestRun = $("#bestRun");
     $cardsLeft = $("#cardsLeft"),
     $fieldCard = $(".fieldCard");
 
@@ -323,21 +325,41 @@ var TPCookie = function () {
 var Score = function () {
     this.value = 100;
     this.incrementer = 1;
+    this.currentRun = 0;
+    this.bestRun = 0;
+    
+    this.getBestRun = function(){
+        return this.bestRun;
+    }
+    
+    this.setBestRun = function(){
+        if(this.currentRun > this.bestRun){
+            this.bestRun = this.currentRun;
+            console.log("currentRun is greater than bestRun");
+        }
+        return this.bestRun;
+    }
 
     this.addToScore = function () {
         var newValue = this.value + this.incrementer;
         this.value = newValue;
+        this.currentRun += this.incrementer;
         this.incrementer++;
     };
     this.removeFromScore = function () {
         var newValue = this.value - 3;
         this.value = newValue;
+        this.currentRun = 0;
         this.incrementer = 1;
     };
 
     this.getScore = function () {
         return this.value;
     };
+    
+    this.getCurrentRun = function () {
+        return this.currentRun;
+    }
 
     this.setFromCookie = function () {
         var newValue = myCookie.read("score");
@@ -511,11 +533,15 @@ function init() {
  */
 function updateUI() {
     var currentScore = myScore.getScore();
+    var currentRun = myScore.getCurrentRun();
+    var bestRun = myScore.setBestRun();
     var $fieldCard = $(".fieldCard");
     var $score = $("#score");
     var arrTop = [];
     var arrLeft = [];
     $score.text(currentScore);
+    $currentRun.text(currentRun);
+    $bestRun.text(bestRun);
     fieldPosition();
     myCookie.create("score", currentScore, 100);
 

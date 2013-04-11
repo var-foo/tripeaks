@@ -3,7 +3,9 @@ body{
 	background:url(images/body.jpg) no-repeat center 0 #120902;
     font-size:1.5em;
 }
-
+p{
+    margin:0;
+}
 #wrapper{
 	position:relative;
 	margin:auto;
@@ -11,16 +13,21 @@ body{
 	width:1200px;
 	height:600px;
 }
-
-#stats{
-	position:absolute;
-	top: 475px;
-	left:100px;
-	color:#04A1F2;
+.stats{
+    position:absolute;
+    color:#04A1F2;
 	border:1px solid #04A1F2;
 	-moz-border-radius:5px;
 	border-radius:5px;
 	padding:5px;
+}
+#stats{
+	top: 475px;
+	left:100px;
+}
+#info{
+    top: 435px;
+    right: 100px;
 }
 
 .statVal{
