@@ -154,7 +154,8 @@ var Field = function (deck) {
                 for (i = 0; i < 30; i++) {
                     cards.push(deck.deal());
                 }
-            };
+            },
+            numPeaks = 3;
 		/**
 		 * accepts a card and adds it to the cards array
 		 * @param card {object} the card being received by the field 
@@ -174,9 +175,14 @@ var Field = function (deck) {
          */
         this.toHtml = function () {
             var arrayOut = [],
-                i;
+                i,
+                peak;
             for (i = 0; i < cards.length; i++) {
-                arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard" data-card="', cards[i].getSuit().toLowerCase(), '_', String(cards[i].getName()).toLowerCase(), '" />');
+                peak = "";
+                if(i < 3){
+                    peak = " peak";
+                }
+                arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard' + peak + '" data-card="', cards[i].getSuit().toLowerCase(), '_', String(cards[i].getName()).toLowerCase(), '" />');
             }
             return arrayOut.join('');
         };
@@ -188,6 +194,13 @@ var Field = function (deck) {
             var card = cards[index];
             return card;
         };
+        
+        this.getNumPeaks = function(){
+            return numPeaks;
+        }
+        this.removePeak = function(){
+            numPeaks --;
+        }
         init();
     };
 
@@ -340,14 +353,36 @@ var Score = function () {
         return this.bestRun;
     }
 
-    this.addToScore = function () {
-        var newValue = this.value + this.incrementer;
-        this.value = newValue;
-        this.currentRun += this.incrementer;
+    this.addToScore = function (isPeak) {
+        var numPeaks;
+        if(isPeak === false){
+            this.value += this.incrementer;
+            this.currentRun += this.incrementer;
+        } else{
+            console.log("You've reached a peak!");
+            numPeaks = myField.getNumPeaks();
+            switch(numPeaks){
+                case 3:
+                    this.value += 15;
+                    this.currentRun += 15;
+                    break;
+                    
+                case 2:
+                    this.value += 30;
+                    this.currentRun += 30;
+                    break;
+                
+                case 1:
+                    this.value += 45;
+                    this.currentRun += 45;
+                    break;
+            }
+            myField.removePeak();
+        }
         this.incrementer++;
     };
     this.removeFromScore = function () {
-        var newValue = this.value - 3;
+        var newValue = this.value - 5;
         this.value = newValue;
         this.currentRun = 0;
         this.incrementer = 1;
@@ -489,13 +524,19 @@ function init() {
         var clickedIndex = ($clickedId.split("-")[1]) - 1;
         var clickedValue = (myField.returnCard(clickedIndex)).getNumber();
         var handVal = myHand.getValue();
+        var isPeak = false;
 
         var success = function () {
+            var i;
             var currentScore = myScore.getScore();
+            if($clicked.hasClass('peak')){
+                isPeak = true;
+                
+            }
             myHand.receiveCard(myField.removeCard(clickedIndex));
             $clicked.removeClass("fieldCard").hide();
             $hand.html(myHand.toHtml());
-            myScore.addToScore();
+            myScore.addToScore(isPeak);
         }
         //Define an easy way to tell if a card is face-down, and if it is, "lock" the card
         
