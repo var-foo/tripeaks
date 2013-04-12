@@ -704,7 +704,7 @@ function updateUI() {
 		
 		link.setAttribute('id','switcher');
 		link.setAttribute('rel','stylesheet');
-		link.setAttribute('href','themes/' + stylename + '.css');
+		link.setAttribute('href','themes/' + stylename + '/' + stylename + '.css');
 		link.setAttribute('type','text/css');
 		head.appendChild(link);
     });
