@@ -692,4 +692,20 @@ function updateUI() {
 		myScore.setFromCookie();
 		$hole.show();
     });
+    
+    $('#changeTheme').on("change", function(){
+    	var switcher = document.getElementById('switcher');
+		var head = document.getElementsByTagName('head')[0];
+		if (switcher) {
+			head.removeChild(switcher);
+		}
+		var link = document.createElement('link');
+		var stylename = $(this).val();
+		
+		link.setAttribute('id','switcher');
+		link.setAttribute('rel','stylesheet');
+		link.setAttribute('href','themes/' + stylename + '.css');
+		link.setAttribute('type','text/css');
+		head.appendChild(link);
+    });
 }());
