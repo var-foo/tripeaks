@@ -1,11 +1,11 @@
 /* The table */
 body{
-	background:url(images/body.jpg) no-repeat center 0 #120902;
-    font-size:1.5em;
+	background: url(images/body.jpg) no-repeat center 0 #120902;
+    font-size: 1.5em;
 }
-p{
-    margin:0;
-}
+
+p { margin:0; }
+
 #wrapper{
 	position:relative;
 	margin:auto;
@@ -13,6 +13,7 @@ p{
 	width:1200px;
 	height:600px;
 }
+
 .stats{
     position:absolute;
     color:#04A1F2;
@@ -21,18 +22,18 @@ p{
 	border-radius:5px;
 	padding:5px;
 }
+
 #stats{
 	top: 475px;
 	left:100px;
 }
+
 #info{
     top: 435px;
     right: 100px;
 }
 
-.statVal{
-	font-weight:bold;
-}
+.statVal { font-weight: 700; }
 
 #newHand{
 	position:absolute;
@@ -85,9 +86,12 @@ p{
 #card-2{left:550px;}
 #card-3{left:950px;}
 
-#card-4, #card-5, #card-6, #card-7, #card-8, #card-9{
-	top:75px;
-}
+#card-4,
+#card-5,
+#card-6,
+#card-7,
+#card-8,
+#card-9 { top: 75px; }
 #card-4{left:100px;}
 #card-5{left:200px;}
 #card-6{left:500px;}
@@ -123,22 +127,22 @@ p{
 #card-30{left:1100px;}
 
 /* The Cards */
-.card, .handCard, #hole{
-	width:99px;
-	height:145px;
-	position:absolute;
-	border:1px solid #666;
-	border-radius:3px;
-	background-color:#fff;
+.card,
+.handCard,
+#hole {
+	width: 99px;
+	height: 145px;
+	position: absolute;
+	border: 1px solid #666;
+	border-radius: 4px;
+	background-color: #fff;
 }
 
-.back, #hole.back{
-	
-	background-color:#234567;
-}
-
-.card:hover, .handCard:hover, #hole:hover{
+.card:hover,
+.handCard:hover,
+#hole:hover {
 	cursor:pointer;
+	border-color: #fff;
 }
 
 .handCard{
@@ -147,6 +151,10 @@ p{
 }
 
 /* Setting the card faces */
-.front{
-	background:url(images/cards/largecards.png) no-repeat 0 0 #fff;
+.front{ background: #fff url(images/cards/largecards.png) no-repeat 0 0; }
+
+/* And their backs */
+.back,
+#hole.back {
+	background:#234567 url(images/card-back.png) no-repeat 0 0 !important; /* The !important needs to stay since the background position gets inlined. */
 }
