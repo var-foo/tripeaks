@@ -693,19 +693,17 @@ function updateUI() {
 		$hole.show();
     });
     
-    $('#changeTheme').on("change", function(){
-    	var switcher = document.getElementById('switcher');
-		var head = document.getElementsByTagName('head')[0];
-		if (switcher) {
-			head.removeChild(switcher);
-		}
-		var link = document.createElement('link');
-		var stylename = $(this).val();
-		
-		link.setAttribute('id','switcher');
-		link.setAttribute('rel','stylesheet');
-		link.setAttribute('href','themes/' + stylename + '/' + stylename + '.css');
-		link.setAttribute('type','text/css');
-		head.appendChild(link);
+    $('#changeTheme').on("change", function (){
+    	var $switcher = $('#switcher'),
+    		$head = $('head'),
+    		stylename = this.value;
+
+		if ($switcher.length) { $switcher.remove(); }
+		$('<link />').attr({
+			'id':'switcher',
+			'rel':'stylesheet',
+			'href':'themes/' + stylename + '/' + stylename + '.css',
+			'type':'text/css'
+		}).appendTo($head);
     });
 }());
