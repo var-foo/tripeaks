@@ -42,7 +42,7 @@ p { margin:0; }
 	cursor:pointer;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 14px;
-	color: #ffffff;
+	color: #fff;
 	padding: 5px 10px;
 	background: -moz-linear-gradient(
 		top,
@@ -72,59 +72,12 @@ p { margin:0; }
 
 }
 
-#hole{
+/* We start all cards in the Hole, then animate out. */
+#hole,
+.card{
 	top:400px;
 	left:500px;
 }
-
-/* Positioning the field */
-#card-1, #card-2, #card-3{
-	top:0px;
-}
-
-#card-1{left:150px;}
-#card-2{left:550px;}
-#card-3{left:950px;}
-
-#card-4,
-#card-5,
-#card-6,
-#card-7,
-#card-8,
-#card-9 { top: 75px; }
-#card-4{left:100px;}
-#card-5{left:200px;}
-#card-6{left:500px;}
-#card-7{left:600px;}
-#card-8{left:900px;}
-#card-9{left:1000px;}
-#card-10, #card-11, #card-12, #card-13, #card-14, #card-15, #card-16, #card-17, #card-18{
-	top:150px;
-}
-#card-10{left:50px;}
-#card-11{left:150px;}
-#card-12{left:250px;}
-#card-13{left:450px;}
-#card-14{left:550px;}
-#card-15{left:650px;}
-#card-16{left:850px;}
-#card-17{left:950px;}
-#card-18{left:1050px;}
-#card-19, #card-20, #card-21, #card-22, #card-23, #card-24, #card-25, #card-26, #card-27, #card-28, #card-29, #card-30{
-	top:225px;
-}
-#card-19{left:0;}
-#card-20{left:100px;}
-#card-21{left:200px;}
-#card-22{left:300px;}
-#card-23{left:400px;}
-#card-24{left:500px;}
-#card-25{left:600px;}
-#card-26{left:700px;}
-#card-27{left:800px;}
-#card-28{left:900px;}
-#card-29{left:1000px;}
-#card-30{left:1100px;}
 
 /* The Cards */
 .card,
@@ -136,6 +89,7 @@ p { margin:0; }
 	border: 1px solid #666;
 	border-radius: 4px;
 	background-color: #fff;
+	box-shadow: 2px 2px 3px rgba(50, 50, 50, 0.85);
 }
 
 .card:hover,
@@ -150,10 +104,10 @@ p { margin:0; }
 	left:650px;
 }
 
-/* Setting the card faces */
+/* Setting the card faces... */
 .front{ background: #fff url(images/cards/largecards.png) no-repeat 0 0; }
 
-/* And their backs */
+/* ...and their backs */
 .back,
 #hole.back {
 	background:#234567 url(images/card-back.png) no-repeat 0 0 !important; /* The !important needs to stay since the background position gets inlined. */

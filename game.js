@@ -88,6 +88,7 @@ var Deck = function () {
             var i,
                 suit,
                 number;
+
             for (i = 0; i < 52; i++) {
                 suit = i % 4 + 1;
                 number = i % 13 + 1;
@@ -126,6 +127,7 @@ var Deck = function () {
 			myHole.receiveCard(this.hit());
         }
     };
+    /* @returns {Card} Pops the top card off the deck. */
     this.hit = function() {
 		return cards.pop();
     };
@@ -134,7 +136,7 @@ var Deck = function () {
 var $field = $("#field"),
     $hole = $("#hole"),
     $hand = $("#hand"),
-    $card = $(".card"),
+    //$card = $(".card"),
     $score = $("#score"),
     $currentRun = $("#currentRun");
     $bestRun = $("#bestRun");
@@ -271,7 +273,7 @@ var Hand = function (deck) {
                 cardNumber = cards[topCard].getNumber(),
                 cardName = cards[topCard].getName();
 
-            arrayOut.push('<div class="card front handCard" data-card="', cards[topCard].getSuit().toLowerCase(), '_', String(cards[topCard].getName()).toLowerCase(), '" />');
+            arrayOut.push('<div class="card front handCard" data-card="', cardSuit.toLowerCase(), '_', String(cardName).toLowerCase(), '" style="background-position:',cardPosition(cardSuit.toLowerCase(), String(cardName).toLowerCase()),';" />');
 
             return arrayOut.join('');
         };
@@ -402,12 +404,10 @@ var Score = function () {
     };
 };
 
-
 /**
  * This function sets the background-positions for the cards in the field.
  * Created because background-position-x is not supported in firefox.
  */
-
 function cardPosition(suit, num) {
 	var bgp, posX, posY;
 
@@ -469,6 +469,7 @@ function cardPosition(suit, num) {
 	bgp = posX + " " + posY;
 	return bgp;
 }
+
 function fieldPosition() {
 	var cards = $(".card");
 	cards.each(function () {
@@ -482,6 +483,7 @@ function fieldPosition() {
 		$this.css("backgroundPosition", css);
 	});
 }
+
 function init() {
     window.myDeck = new Deck();
     window.myHole = new Hole(myDeck);
@@ -490,7 +492,23 @@ function init() {
     window.myScore = new Score();
     window.myCookie = new TPCookie();
 
-    var currentScore = myScore.getScore();
+    var currentScore = myScore.getScore(),
+    	defaults = {
+			peaks: 3,
+			topOffset: 75,
+			cardWidth: 100,
+			leftOffset:150
+		},
+		rowLimit = defaults.peaks,
+		rowCounter = 0,
+		nextIndex = rowLimit,
+		topPos = 0,
+		leftPos = defaults.leftOffset,
+		gapWidth = 300,
+		grouping = 1,
+		groupCount,
+		cardCount,
+		newRow = true;
 
     myDeck.shuffle();
     myDeck.deal();
@@ -501,15 +519,60 @@ function init() {
 
     if (myCookie.read("score") == null) {
         myCookie.create("score", currentScore, 100);
+    }else{
+    	myScore.setFromCookie();	
     }
+	
+	/* Animate the field cards from the Hole. */
+	for (cardCount=1; cardCount <= defaults.peaks*10; cardCount++){
+		// The new row's first card is good to go
+		if (!newRow){
+			// This happens regardless.
+			leftPos += defaults.cardWidth;
+			if( groupCount === grouping){
+				// Add gap and reset group counter.
+				leftPos += gapWidth;
+				groupCount = 1;
+			}else{
+				// Increment the group counter.
+				groupCount++;
+			}
+		}else{
+			// start the grouping/gap calculations on the remaining cards in this row
+			newRow = false;
+			groupCount = 1;
+		}
+		// Animate the card using jQuery
+		$("#card-"+cardCount).addClass("back").animate({ top:topPos, left:leftPos },700, updateUI);
+		
+		if (cardCount === nextIndex){
+			// we have reached the end of this row
+			rowLimit = rowLimit + defaults.peaks;
+			nextIndex = cardCount+rowLimit;
+			
+			// reset top position accordingly
+			topPos = topPos + defaults.topOffset;
+			
+			// reset left position accordingly
+			defaults.leftOffset -= 50;
+			leftPos = defaults.leftOffset;
+			
+			// for each row, we knock a hundred pixels out of the gap.
+			gapWidth -= 100;
+			
+			// increase the grouping by 1 - grouping is also row count.
+			grouping++;
+			newRow = true;
+		}
+	}
 
+	
     $hole.on("click", function () {
-        //var currentScore = myScore.getScore();
         myHand.receiveCard(myHole.hitHand());
         $hand.html(myHand.toHtml());
         myScore.removeFromScore();
         updateUI();
-        if ( !! myHole.checkForCards()) {
+        if ( !!myHole.checkForCards() ) {
             $cardsLeft.html(myHole.checkForCards());
         } else {
             $hole.hide();
@@ -518,29 +581,25 @@ function init() {
     });
 
     $(".fieldCard").on("click", function () {
-        var $clicked = $(this);
-        var locked;
-        var $clickedId = $clicked.attr("id");
-        var clickedIndex = ($clickedId.split("-")[1]) - 1;
-        var clickedValue = (myField.returnCard(clickedIndex)).getNumber();
-        var handVal = myHand.getValue();
-        var isPeak = false;
-
-        var success = function () {
-            var i;
-            var currentScore = myScore.getScore();
-            if($clicked.hasClass('peak')){
-                isPeak = true;
-                
-            }
-            myHand.receiveCard(myField.removeCard(clickedIndex));
-            $clicked.removeClass("fieldCard").hide();
-            $hand.html(myHand.toHtml());
-            myScore.addToScore(isPeak);
-        }
-        //Define an easy way to tell if a card is face-down, and if it is, "lock" the card
-        
-
+        var $clicked = $(this),
+        	locked,
+        	clickedId = $clicked.attr("id"),
+        	clickedIndex = (clickedId.split("-")[1]) - 1,
+        	clickedValue = (myField.returnCard(clickedIndex)).getNumber(),
+        	handVal = myHand.getValue(),
+        	isPeak = false,
+        	success = function () {
+				var i;
+	
+				if($clicked.hasClass('peak')){
+					isPeak = true;
+				}
+				myHand.receiveCard(myField.removeCard(clickedIndex));
+				$clicked.removeClass("fieldCard").hide();
+				$hand.html(myHand.toHtml());
+				myScore.addToScore(isPeak);
+			};
+        /* Define an easy way to tell if a card is face-down, and if it is, "lock" the card */
         //if the clicked card is visible...
         if (!$clicked.hasClass("back")) {
             // ...and it's not an ace or a king...
@@ -573,13 +632,14 @@ function init() {
  * updateUI shows the stat updates, updates the score cookie and toggles card visibility.
  */
 function updateUI() {
-    var currentScore = myScore.getScore();
-    var currentRun = myScore.getCurrentRun();
-    var bestRun = myScore.setBestRun();
-    var $fieldCard = $(".fieldCard");
-    var $score = $("#score");
-    var arrTop = [];
-    var arrLeft = [];
+    var currentScore = myScore.getScore(),
+    	currentRun = myScore.getCurrentRun(),
+    	bestRun = myScore.setBestRun(),
+    	$score = $("#score"),
+    	arrTop = [],
+    	arrLeft = [];
+    
+    window.$fieldCard = $(".fieldCard")
     $score.text(currentScore);
     $currentRun.text(currentRun);
     $bestRun.text(bestRun);
@@ -590,60 +650,46 @@ function updateUI() {
     // but we need to create the entire array before we start checking
     // the cards against it. This is a good case for having a small db.
     $fieldCard.each(function () {
-        var $thisLeft = parseInt($(this).css("left"), 10);
-        var $thisTop = parseInt($(this).css("top"), 10);
+    	var $this = $(this),
+    		$thisLeft = parseInt($this.offset().left, 10),
+    		$thisTop = parseInt($this.offset().top, 10);
+
         arrTop.push($thisTop);
         arrLeft.push($thisLeft);
-
     });
 
     $fieldCard.each(function (index, el) {
-        var $thisTop = parseInt($(this).css("top"), 10);
-        var $thisLeft = parseInt($(this).css("left"), 10);
-        for (var i = 0; i < arrTop.length; i++) {
-            var $this = $(this);
-            if (arrTop[i] == $thisTop + 75 && (arrLeft[i] == $thisLeft + 50 || arrLeft[i] == $thisLeft - 50)) {
+        var $this = $(this),
+    		$thisLeft = parseInt($this.offset().left, 10),
+    		$thisTop = parseInt($this.offset().top, 10),
+    		i;
 
+        for (i = 0; i < arrTop.length; i++) {
+            if (arrTop[i] == $thisTop + 75 && (arrLeft[i] == $thisLeft + 50 || arrLeft[i] == $thisLeft - 50)) {
                 $this.removeClass("front").addClass("back");
                 break;
             } else {
                 $this.removeClass("back").addClass("front");
             }
         }
-
     });
-
 }
 
-/**
- * reset does all of the dirty work to end the current hand and start a new hand.
- */
-function reset() {
-    var currentScore = myScore.getScore();
-    $hole.off();
-    $fieldCard.off();
-    for (var i = 0; i < $(".fieldCard").length; i++) {
-        myScore.removeFromScore();
-    }
-    myCookie.create("score", myScore.value, 100);
-    init();
-    myScore.setFromCookie();
-    updateUI();
-    $hole.show();
-}
+
 
 //Stuff in here only runs exactly one time per page load...
 (function () {
-
-    var $newHand = $("#newHand");
-    $newHand.on("click", function () {
-        reset();
+	init();
+    $("#newHand").on("click", function () {
+        var currentScore = myScore.getScore();
+		$hole.off();
+		$fieldCard.off();
+		for (var i = 0; i < $(".fieldCard").length; i++) {
+			myScore.removeFromScore();
+		}
+		myCookie.create("score", myScore.value, 100);
+		init();
+		myScore.setFromCookie();
+		$hole.show();
     });
-    init();
-    if(myCookie.read("score")){
-    	myScore.setFromCookie();	
-    }
-    
-    updateUI();
-
 }());
