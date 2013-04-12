@@ -109,10 +109,10 @@ p { margin:0; }
 }
 
 /* Setting the card faces... */
-.front{ background: #fff url(images/cards/largecards.png) no-repeat 0 0; }
+.front{ background: #fff url(themes/default/images/largecards.png) no-repeat 0 0; }
 
 /* ...and their backs */
 .back,
 #hole.back {
-	background:#234567 url(images/card-back.png) no-repeat 0 0 !important; /* The !important needs to stay since the background position gets inlined. */
+	background:#234567 url(themes/default/images/card-back.png) no-repeat 0 0 !important; /* The !important needs to stay since the background position gets inlined. */
 }
