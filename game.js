@@ -665,7 +665,7 @@ function init() {
         for (i = 0; i < $(".fieldCard").length; i++) {
             window.myScore.removeFromScore();
         }
-        window.myCookie.create("score", window.myScore.value, 100);
+        window.myCookie.create("score", window.myScore.getScore() , 100);
         init();
         window.myScore.setFromCookie();
         $hole.show();
