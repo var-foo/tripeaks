@@ -1,3 +1,14 @@
+// Set up some globals
+var $field = $("#field"),
+    $hole = $("#hole"),
+    $hand = $("#hand"),
+    //$card = $(".card"),
+    $score = $("#score"),
+    $currentRun = $("#currentRun");
+    $bestRun = $("#bestRun");
+    $cardsLeft = $("#cardsLeft"),
+    $fieldCard = $(".fieldCard");
+
 /** @constructor */
 var Card = function (suit, number) {
     /** @returns {Number} The number of the card in the deck. (1-52) */
@@ -116,7 +127,6 @@ var Deck = function () {
 		var i;
 		this.shuffle();
         if (!cards.length) {
-            console.log("Ran out of cards, new deck");
             newCards();
             this.shuffle();
         }
@@ -132,16 +142,7 @@ var Deck = function () {
 		return cards.pop();
     };
 };
-// Set up some globals
-var $field = $("#field"),
-    $hole = $("#hole"),
-    $hand = $("#hand"),
-    //$card = $(".card"),
-    $score = $("#score"),
-    $currentRun = $("#currentRun");
-    $bestRun = $("#bestRun");
-    $cardsLeft = $("#cardsLeft"),
-    $fieldCard = $(".fieldCard");
+
 
 /**
  * Field is the peaks themselves. This does not include the hole or hand.
@@ -149,62 +150,62 @@ var $field = $("#field"),
  * @param deck {string} The name of the deck you want to deal from.
  */
 var Field = function (deck) {
-        var cards = [],
-            i,
-            init = function () {
-                cards = [];
-                for (i = 0; i < 30; i++) {
-                    cards.push(deck.deal());
-                }
-            },
-            numPeaks = 3;
-		/**
-		 * accepts a card and adds it to the cards array
-		 * @param card {object} the card being received by the field 
-		 */
-        this.receiveCard = function (card) {
-            cards.push(card);
-        };
-        /**
-         * returns a single card object in the array
-         * @param index {number} the index of the card in the cards array
-         */
-        this.returnCard = function (index) {
-            return cards[index];
-        };
-        /**
-         * Creates a div for each card in the cards array.
-         */
-        this.toHtml = function () {
-            var arrayOut = [],
-                i,
-                peak;
-            for (i = 0; i < cards.length; i++) {
-                peak = "";
-                if(i < 3){
-                    peak = " peak";
-                }
-                arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard' + peak + '" data-card="', cards[i].getSuit().toLowerCase(), '_', String(cards[i].getName()).toLowerCase(), '" />');
-            }
-            return arrayOut.join('');
-        };
-        /**
-         * removes a single card from the cards array
-         * @param index {number} the index of the card in the cards array that you want to remove
-         */
-        this.removeCard = function (index) {
-            var card = cards[index];
-            return card;
-        };
-        
-        this.getNumPeaks = function(){
-            return numPeaks;
+    var cards = [],
+        i,
+        numPeaks = 3;
+    (function () {
+        cards = [];
+        for (i = 0; i < 30; i++) {
+            cards.push(deck.deal());
         }
-        this.removePeak = function(){
-            numPeaks --;
-        }
-        init();
+    }());
+
+    /**
+     * accepts a card and adds it to the cards array
+     * @param card {object} the card being received by the field 
+     */
+    this.receiveCard = function (card) {
+        cards.push(card);
     };
+    /**
+     * returns a single card object in the array
+     * @param index {number} the index of the card in the cards array
+     */
+    this.returnCard = function (index) {
+        return cards[index];
+    };
+    /**
+     * Creates a div for each card in the cards array.
+     */
+    this.toHtml = function () {
+        var arrayOut = [],
+            i,
+            peak;
+        for (i = 0; i < cards.length; i++) {
+            peak = "";
+            if(i < 3){
+                peak = " peak";
+            }
+            arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard' + peak + '" data-card="', cards[i].getSuit().toLowerCase(), '_', String(cards[i].getName()).toLowerCase(), '" />');
+        }
+        return arrayOut.join('');
+    };
+    /**
+     * removes a single card from the cards array
+     * @param index {number} the index of the card in the cards array that you want to remove
+     */
+    this.removeCard = function (index) {
+        var card = cards[index];
+        return card;
+    };
+
+    this.getNumPeaks = function(){
+        return numPeaks;
+    }
+    this.removePeak = function(){
+        numPeaks --;
+    }
+};
 
 /**
  * Hole is the deck itself.
@@ -215,12 +216,12 @@ var Hole = function (deck) {
         var cards = [],
             i;
 		/** @constructor */
-        this.init = function () {
+        (function () {
             cards = [];
             for (i = 0; i < 22; i++) {
                 cards.push(deck.deal());
             }
-        };
+        }());
         /**
          * pops the top card off of the stack
          */
@@ -234,10 +235,6 @@ var Hole = function (deck) {
         this.receiveCard = function (card) {
             cards.push(card);
         };
-         /** @depricated */
-        this.giveCard = function () {
-            return cards.pop();
-        };
         /** returns the total number of card objects in the cards array */
         this.checkForCards = function () {
             return cards.length;
@@ -250,7 +247,6 @@ var Hole = function (deck) {
             }
             return arrayOut.join('');
         };
-        this.init();
     };
 
 /**
@@ -634,7 +630,7 @@ function updateUI() {
     	arrTop = [],
     	arrLeft = [];
     
-    window.$fieldCard = $(".fieldCard")
+    window.$fieldCard = $(".fieldCard");
     $score.text(currentScore);
     $currentRun.text(currentRun);
     $bestRun.text(bestRun);
