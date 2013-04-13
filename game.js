@@ -365,18 +365,13 @@ var Score = function () {
             numPeaks = myField.getNumPeaks();
             switch(numPeaks){
                 case 3:
-                    this.value += 15;
-                    this.currentRun += 15;
-                    break;
-                    
                 case 2:
-                    this.value += 30;
-                    this.currentRun += 30;
+                    this.value += (this.incrementer + 15);
+                    this.currentRun += (this.incrementer + 15);
                     break;
-                
                 case 1:
-                    this.value += 45;
-                    this.currentRun += 45;
+                    this.value += (this.incrementer + 30);
+                    this.currentRun += (this.incrementer + 30);
                     break;
             }
             myField.removePeak();
