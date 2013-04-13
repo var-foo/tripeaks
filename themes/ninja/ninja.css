@@ -1,7 +1,7 @@
 body { background:#111; }
 
 /* Setting the card faces... */
-.front{ background: #131313 url(images/largecards.png) no-repeat 0 0; }
+.front{ background: #000 url(images/largecards.png) no-repeat 0 0; }
 
 /* ...and their backs */
 .back,
