@@ -1,3 +1,154 @@
+var Tripeaks = {
+	defaults : {
+		peaks: 3,
+		cardWidth:100,
+		cardHeight:144
+	},
+	init: function () {
+		window.myDeck = new Deck();
+		window.myHole = new Hole(myDeck);
+		window.myHand = new Hand(myDeck);
+		window.myField = new Field(myDeck);
+		window.myScore = new Score();
+		window.myCookie = new TPCookie();
+	
+		var currentScore = myScore.getScore(),
+			rowLimit = Tripeaks.defaults.peaks,
+			rowCounter = 0,
+			nextIndex = rowLimit,
+			topOffset=75,
+			leftOffset=150,
+			topPos = 0,
+			leftPos = leftOffset,
+			gapWidth = Tripeaks.defaults.peaks * Tripeaks.defaults.cardWidth,
+			grouping = 1,
+			groupCount,
+			cardCount,
+			newRow = true,
+			$field = $("#field");
+	
+		myDeck.shuffle();
+		myDeck.deal();
+		$field.html(myField.toHtml());
+		myHand.receiveCard(myHole.hitHand());
+		Tripeaks.$hand.html(myHand.toHtml());
+		Tripeaks.$cardsLeft.html(myHole.checkForCards());
+	
+		if (myCookie.read("score") == null) {
+			myCookie.create("score", currentScore, 100);
+		}else{
+			myScore.setFromCookie();	
+		}
+		
+		/* Animate the field cards from the Hole. */
+		for (cardCount=1; cardCount <= Tripeaks.defaults.peaks*10; cardCount++){
+			// The new row's first card is good to go
+			if (!newRow){
+				// This happens regardless.
+				leftPos += Tripeaks.defaults.cardWidth;
+				if( groupCount === grouping){
+					// Add gap and reset group counter.
+					leftPos += gapWidth;
+					groupCount = 1;
+				}else{
+					// Increment the group counter.
+					groupCount++;
+				}
+			}else{
+				// start the grouping/gap calculations on the remaining cards in this row
+				newRow = false;
+				groupCount = 1;
+			}
+			// Animate the card using jQuery
+			$("#card-"+cardCount).addClass("back").animate({ top:topPos, left:leftPos },700, updateUI);
+			
+			if (cardCount === nextIndex){
+				// we have reached the end of this row
+				rowLimit = rowLimit + Tripeaks.defaults.peaks;
+				nextIndex = cardCount+rowLimit;
+				
+				// reset top position accordingly
+				topPos = topPos + topOffset;
+				
+				// reset left position accordingly
+				leftOffset -= (Tripeaks.defaults.cardWidth/2);
+				leftPos = leftOffset;
+				
+				// for each row, we knock a hundred pixels out of the gap.
+				gapWidth -= Tripeaks.defaults.cardWidth;
+				
+				// increase the grouping by 1 - grouping is also row count.
+				grouping++;
+				newRow = true;
+			}
+		}
+	
+		
+		Tripeaks.$hole.on("click", function () {
+			var cardsLeft;
+			myHand.receiveCard(myHole.hitHand());
+			Tripeaks.$hand.html(myHand.toHtml());
+			myScore.removeFromScore();
+			updateUI();
+			cardsLeft = myHole.checkForCards();
+			Tripeaks.$cardsLeft.html(cardsLeft);
+			if ( !cardsLeft ) {
+				Tripeaks.$hole.hide();
+			}
+		});
+	
+		$(".fieldCard").on("click", function () {
+			var $clicked = $(this),
+				locked,
+				clickedId = $clicked.attr("id"),
+				clickedIndex = (clickedId.split("-")[1]) - 1,
+				clickedValue = (myField.returnCard(clickedIndex)).getNumber(),
+				handVal = myHand.getValue(),
+				isPeak = false,
+				success = function () {
+					if($clicked.hasClass('peak')){
+						isPeak = true;
+					}
+					myHand.receiveCard(myField.removeCard(clickedIndex));
+					$clicked.removeClass("fieldCard").hide();
+					Tripeaks.$hand.html(myHand.toHtml());
+					myScore.addToScore(isPeak);
+				};
+			/* Define an easy way to tell if a card is face-down, and if it is, "lock" the card */
+			//if the clicked card is visible...
+			if (!$clicked.hasClass("back")) {
+				// ...and it's not an ace or a king...
+				if ((clickedValue != 1) && (clickedValue != 13)) {
+					// ...and the card's face value is 1 less or 1 greater than the hand card, remove it from
+					// the field and add it to the hand.
+					if ((handVal === clickedValue + 1) || (handVal === clickedValue - 1)) {
+						success();
+					}
+				} else if (clickedValue === 13) {
+					// what to do if the clicked card is a king
+					if ((handVal === 1) || (handVal === clickedValue - 1)) {
+						success();
+					}
+				} else if (clickedValue === 1) {
+					// what to do if the clicked card is an ace
+					if ((handVal === 13) || (myHand.getValue() === clickedValue + 1)) {
+						success();
+					}
+				}
+			}
+			updateUI();
+		});
+	}
+};
+// Set up some globals
+Tripeaks.$hole = $("#hole");
+Tripeaks.$hand = $("#hand");
+Tripeaks.$score = $("#score");
+Tripeaks.$currentRun = $("#currentRun");
+Tripeaks.$bestRun = $("#bestRun");
+Tripeaks.$cardsLeft = $("#cardsLeft");
+Tripeaks.$fieldCard = $(".fieldCard");
+
 /** @constructor */
 var Card = function (suit, number) {
     /** @returns {Number} The number of the card in the deck. (1-52) */
@@ -75,11 +226,13 @@ var Card = function (suit, number) {
         }
         return cardName;
     };
+    
     /** @returns {String} The full name of the card. "Ace of Spades" */
-    this.getFullName = function () {
+	this.getFullName = function () {
         return this.getName() + this.getSymbol();
     };
 };
+
 /** @constructor */
 var Deck = function () {
     /** Creates a new set of cards. */
@@ -132,16 +285,7 @@ var Deck = function () {
 		return cards.pop();
     };
 };
-// Set up some globals
-var $field = $("#field"),
-    $hole = $("#hole"),
-    $hand = $("#hand"),
-    //$card = $(".card"),
-    $score = $("#score"),
-    $currentRun = $("#currentRun");
-    $bestRun = $("#bestRun");
-    $cardsLeft = $("#cardsLeft"),
-    $fieldCard = $(".fieldCard");
+
 
 /**
  * Field is the peaks themselves. This does not include the hole or hand.
@@ -157,7 +301,7 @@ var Field = function (deck) {
                     cards.push(deck.deal());
                 }
             },
-            numPeaks = 3;
+            peaksLeft = Tripeaks.defaults.peaks;
 		/**
 		 * accepts a card and adds it to the cards array
 		 * @param card {object} the card being received by the field 
@@ -181,7 +325,7 @@ var Field = function (deck) {
                 peak;
             for (i = 0; i < cards.length; i++) {
                 peak = "";
-                if(i < 3){
+                if(i < Tripeaks.defaults.peaks){
                     peak = " peak";
                 }
                 arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard' + peak + '" data-card="', cards[i].getSuit().toLowerCase(), '_', String(cards[i].getName()).toLowerCase(), '" />');
@@ -196,12 +340,13 @@ var Field = function (deck) {
             var card = cards[index];
             return card;
         };
-        
+        // returns number of remaining peaks
         this.getNumPeaks = function(){
-            return numPeaks;
+            return peaksLeft;
         }
+        // subtracts 1 from the number of remaining peaks
         this.removePeak = function(){
-            numPeaks --;
+            peaksLeft--;
         }
         init();
     };
@@ -236,7 +381,7 @@ var Hole = function (deck) {
         };
          /** @depricated */
         this.giveCard = function () {
-            return cards.pop();
+            return this.hitHand();
         };
         /** returns the total number of card objects in the cards array */
         this.checkForCards = function () {
@@ -345,7 +490,7 @@ var Score = function () {
     
     this.getBestRun = function(){
         return this.bestRun;
-    }
+    };
     
     this.setBestRun = function(){
         if(this.currentRun > this.bestRun){
@@ -353,7 +498,7 @@ var Score = function () {
             console.log("currentRun is greater than bestRun");
         }
         return this.bestRun;
-    }
+    };
 
     this.addToScore = function (isPeak) {
         var numPeaks;
@@ -391,7 +536,7 @@ var Score = function () {
     
     this.getCurrentRun = function () {
         return this.currentRun;
-    }
+    };
 
     this.setFromCookie = function () {
         var newValue = myCookie.read("score");
@@ -404,70 +549,83 @@ var Score = function () {
  * Created because background-position-x is not supported in firefox.
  */
 function cardPosition(suit, num) {
-	var bgp, posX, posY;
+	var bgp,
+		posX = 0,
+		posY = 0,
+		borderWidth = 1;
 
 	switch (suit) {
-	case "clubs":
-		posX = "-1px";
-		break;
-	case "diamonds":
-		posX = "-100px";
-		break;
-	case "hearts":
-		posX = "-199px";
-		break;
-	case "spades":
-		posX = "-298px";
-		break;
+		case "diamonds":
+			posX = Tripeaks.defaults.cardWidth;
+			break;
+		case "hearts":
+			posX = Tripeaks.defaults.cardWidth*2;
+			break;
+		case "spades":
+			posX = Tripeaks.defaults.cardWidth*3;
+			break;
 	}
 	switch (num) {
-	case "2":
-		posY = "0";
-		break;
-	case "3":
-		posY = "-146px";
-		break;
-	case "4":
-		posY = "-291px";
-		break;
-	case "5":
-		posY = "-435px";
-		break;
-	case "6":
-		posY = "-581px";
-		break;
-	case "7":
-		posY = "-726px";
-		break;
-	case "8":
-		posY = "-871px";
-		break;
-	case "9":
-		posY = "-1016px";
-		break;
-	case "10":
-		posY = "-1161px";
-		break;
-	case "j":
-		posY = "-1305px";
-		break;
-	case "q":
-		posY = "-1451px";
-		break;
-	case "k":
-		posY = "-1596px";
-		break;
-	case "a":
-		posY = "-1741px";
-		break;
+		case "3":
+			posY = Tripeaks.defaults.cardHeight;
+			break;
+		case "4":
+			posY = Tripeaks.defaults.cardHeight*2;
+			break;
+		case "5":
+			posY = Tripeaks.defaults.cardHeight*3;
+			break;
+		case "6":
+			posY = Tripeaks.defaults.cardHeight*4;
+			break;
+		case "7":
+			posY = Tripeaks.defaults.cardHeight*5;
+			break;
+		case "8":
+			posY = Tripeaks.defaults.cardHeight*6;
+			break;
+		case "9":
+			posY = Tripeaks.defaults.cardHeight*7;
+			break;
+		case "10":
+			posY = Tripeaks.defaults.cardHeight*8;
+			break;
+		case "j":
+			posY = Tripeaks.defaults.cardHeight*9;
+			break;
+		case "q":
+			posY = Tripeaks.defaults.cardHeight*10;
+			break;
+		case "k":
+			posY = Tripeaks.defaults.cardHeight*11;
+			break;
+		case "a":
+			posY = Tripeaks.defaults.cardHeight*12;
+			break;
 	}
-	bgp = posX + " " + posY;
+	posX += borderWidth;
+	posY += borderWidth;
+	bgp = "-" + posX + "px -" + posY + "px";
 	return bgp;
 }
 
-function fieldPosition() {
-	var cards = $(".card");
-	cards.each(function () {
+/**
+ * updateUI shows the stat updates, updates the score cookie and toggles card visibility.
+ */
+function updateUI() {
+    var currentScore = myScore.getScore(),
+    	currentRun = myScore.getCurrentRun(),
+    	bestRun = myScore.setBestRun(),
+    	arrTop = [],
+    	arrLeft = [];
+    
+    Tripeaks.$fieldCard = $(".fieldCard");
+    Tripeaks.$score.text(currentScore);
+    Tripeaks.$currentRun.text(currentRun);
+    Tripeaks.$bestRun.text(bestRun);
+    
+    // set up the card's background images (fronts).
+    $(".card").each(function () {
 		var $this = $(this),
 			card = $this.attr("data-card"),
 			cardInfo = card.split("_"),
@@ -477,183 +635,20 @@ function fieldPosition() {
 
 		$this.css("backgroundPosition", css);
 	});
-}
-
-function init() {
-    window.myDeck = new Deck();
-    window.myHole = new Hole(myDeck);
-    window.myHand = new Hand(myDeck);
-    window.myField = new Field(myDeck);
-    window.myScore = new Score();
-    window.myCookie = new TPCookie();
-
-    var currentScore = myScore.getScore(),
-    	defaults = {
-			peaks: 3,
-			topOffset: 75,
-			cardWidth: 100,
-			leftOffset:150
-		},
-		rowLimit = defaults.peaks,
-		rowCounter = 0,
-		nextIndex = rowLimit,
-		topPos = 0,
-		leftPos = defaults.leftOffset,
-		gapWidth = 300,
-		grouping = 1,
-		groupCount,
-		cardCount,
-		newRow = true;
-
-    myDeck.shuffle();
-    myDeck.deal();
-    $field.html(myField.toHtml());
-    myHand.receiveCard(myHole.hitHand());
-    $hand.html(myHand.toHtml());
-    $cardsLeft.html(myHole.checkForCards());
-
-    if (myCookie.read("score") == null) {
-        myCookie.create("score", currentScore, 100);
-    }else{
-    	myScore.setFromCookie();	
-    }
-	
-	/* Animate the field cards from the Hole. */
-	for (cardCount=1; cardCount <= defaults.peaks*10; cardCount++){
-		// The new row's first card is good to go
-		if (!newRow){
-			// This happens regardless.
-			leftPos += defaults.cardWidth;
-			if( groupCount === grouping){
-				// Add gap and reset group counter.
-				leftPos += gapWidth;
-				groupCount = 1;
-			}else{
-				// Increment the group counter.
-				groupCount++;
-			}
-		}else{
-			// start the grouping/gap calculations on the remaining cards in this row
-			newRow = false;
-			groupCount = 1;
-		}
-		// Animate the card using jQuery
-		$("#card-"+cardCount).addClass("back").animate({ top:topPos, left:leftPos },700, updateUI);
-		
-		if (cardCount === nextIndex){
-			// we have reached the end of this row
-			rowLimit = rowLimit + defaults.peaks;
-			nextIndex = cardCount+rowLimit;
-			
-			// reset top position accordingly
-			topPos = topPos + defaults.topOffset;
-			
-			// reset left position accordingly
-			defaults.leftOffset -= 50;
-			leftPos = defaults.leftOffset;
-			
-			// for each row, we knock a hundred pixels out of the gap.
-			gapWidth -= 100;
-			
-			// increase the grouping by 1 - grouping is also row count.
-			grouping++;
-			newRow = true;
-		}
-	}
-
-	
-    $hole.on("click", function () {
-        myHand.receiveCard(myHole.hitHand());
-        $hand.html(myHand.toHtml());
-        myScore.removeFromScore();
-        updateUI();
-        if ( !!myHole.checkForCards() ) {
-            $cardsLeft.html(myHole.checkForCards());
-        } else {
-            $hole.hide();
-        }
-
-    });
-
-    $(".fieldCard").on("click", function () {
-        var $clicked = $(this),
-        	locked,
-        	clickedId = $clicked.attr("id"),
-        	clickedIndex = (clickedId.split("-")[1]) - 1,
-        	clickedValue = (myField.returnCard(clickedIndex)).getNumber(),
-        	handVal = myHand.getValue(),
-        	isPeak = false,
-        	success = function () {
-				var i;
-	
-				if($clicked.hasClass('peak')){
-					isPeak = true;
-				}
-				myHand.receiveCard(myField.removeCard(clickedIndex));
-				$clicked.removeClass("fieldCard").hide();
-				$hand.html(myHand.toHtml());
-				myScore.addToScore(isPeak);
-			};
-        /* Define an easy way to tell if a card is face-down, and if it is, "lock" the card */
-        //if the clicked card is visible...
-        if (!$clicked.hasClass("back")) {
-            // ...and it's not an ace or a king...
-            if ((clickedValue != 1) && (clickedValue != 13)) {
-                // ...and the card's face value is 1 less or 1 greater than the hand card, remove it from
-                // the field and add it to the hand.
-                if ((handVal === clickedValue + 1) || (handVal === clickedValue - 1)) {
-                    success();
-                }
-
-            } else if (clickedValue === 13) {
-                // what to do if the clicked card is a king
-                var currentScore = myScore.getScore();
-
-                if ((handVal === 1) || (handVal === clickedValue - 1)) {
-                    success();
-                }
-            } else if (clickedValue === 1) {
-                // what to do if the clicked card is an ace
-                if ((handVal === 13) || (myHand.getValue() === clickedValue + 1)) {
-                    success();
-                }
-            }
-        }
-        updateUI();
-    });
-};
-
-/**
- * updateUI shows the stat updates, updates the score cookie and toggles card visibility.
- */
-function updateUI() {
-    var currentScore = myScore.getScore(),
-    	currentRun = myScore.getCurrentRun(),
-    	bestRun = myScore.setBestRun(),
-    	$score = $("#score"),
-    	arrTop = [],
-    	arrLeft = [];
     
-    window.$fieldCard = $(".fieldCard")
-    $score.text(currentScore);
-    $currentRun.text(currentRun);
-    $bestRun.text(bestRun);
-    fieldPosition();
     myCookie.create("score", currentScore, 100);
 
     // Two .each loops on the same collection of nodes seems strange,
     // but we need to create the entire array before we start checking
     // the cards against it. This is a good case for having a small db.
-    $fieldCard.each(function () {
+    Tripeaks.$fieldCard.each(function () {
     	var $this = $(this),
     		$thisLeft = parseInt($this.offset().left, 10),
     		$thisTop = parseInt($this.offset().top, 10);
 
         arrTop.push($thisTop);
         arrLeft.push($thisLeft);
-    });
-
-    $fieldCard.each(function (index, el) {
+    }).each(function (index, el) {
         var $this = $(this),
     		$thisLeft = parseInt($this.offset().left, 10),
     		$thisTop = parseInt($this.offset().top, 10),
@@ -670,22 +665,19 @@ function updateUI() {
     });
 }
 
-
-
 //Stuff in here only runs exactly one time per page load...
 (function () {
-	init();
+	Tripeaks.init();
     $("#newHand").on("click", function () {
-        var currentScore = myScore.getScore();
-		$hole.off();
-		$fieldCard.off();
-		for (var i = 0; i < $(".fieldCard").length; i++) {
+      	Tripeaks.$hole.off();
+		Tripeaks.$fieldCard.off();
+		for (var i = 0; i < Tripeaks.$fieldCard.length; i++) {
 			myScore.removeFromScore();
 		}
 		myCookie.create("score", myScore.value, 100);
-		init();
+		Tripeaks.init();
 		myScore.setFromCookie();
-		$hole.show();
+		Tripeaks.$hole.show();
     });
     
     $('#changeTheme').on("change", function (){

@@ -1,10 +1,10 @@
 body { background:#111; }
 
 /* Setting the card faces... */
-.front{ background: #fff url(images/largecards.png) no-repeat 0 0; }
+.front{ background: #131313 url(images/largecards.png) no-repeat 0 0; }
 
 /* ...and their backs */
 .back,
 #hole.back {
-	background:#333 url(images/card-back.png) no-repeat 0 0 !important; /* The !important needs to stay since the background position gets inlined. */
+	background:#333 url(images/card-back.png) no-repeat -1px -1px !important; /* The !important needs to stay since the background position gets inlined. */
 }

@@ -87,8 +87,8 @@ p { margin:0; }
 .card,
 .handCard,
 #hole {
-	width: 99px;
-	height: 145px;
+	width: 98px;
+	height: 142px;
 	position: absolute;
 	border: 1px solid #666;
 	border-radius: 4px;
@@ -114,5 +114,5 @@ p { margin:0; }
 /* ...and their backs */
 .back,
 #hole.back {
-	background:#234567 url(themes/default/images/card-back.png) no-repeat 0 0 !important; /* The !important needs to stay since the background position gets inlined. */
+	background:#234567 url(themes/default/images/card-back.png) no-repeat -1px -1px !important; /* The !important needs to stay since the background position gets inlined. */
 }
