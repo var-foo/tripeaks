@@ -159,18 +159,18 @@ var Card = function (suit, number) {
     this.getSuit = function () {
         var suitName = '';
         switch (suit) {
-        case 1:
-            suitName = "Hearts";
-            break;
-        case 2:
-            suitName = "Clubs";
-            break;
-        case 3:
-            suitName = "Spades";
-            break;
-        case 4:
-            suitName = "Diamonds";
-            break;
+            case 1:
+                suitName = "Hearts";
+                break;
+            case 2:
+                suitName = "Clubs";
+                break;
+            case 3:
+                suitName = "Spades";
+                break;
+            case 4:
+                suitName = "Diamonds";
+                break;
         }
         return suitName;
     };
@@ -178,18 +178,18 @@ var Card = function (suit, number) {
     this.getSymbol = function () {
         var suitName = '';
         switch (suit) {
-        case 1:
-            suitName = "&hearts;";
-            break;
-        case 2:
-            suitName = "&clubs;";
-            break;
-        case 3:
-            suitName = "&spades;";
-            break;
-        case 4:
-            suitName = "&diams;";
-            break;
+            case 1:
+                suitName = "&hearts;";
+                break;
+            case 2:
+                suitName = "&clubs;";
+                break;
+            case 3:
+                suitName = "&spades;";
+                break;
+            case 4:
+                suitName = "&diams;";
+                break;
         }
         return suitName;
     };
@@ -208,21 +208,21 @@ var Card = function (suit, number) {
     this.getName = function () {
         var cardName = '';
         switch (number) {
-        case 1:
-            cardName = "A";
-            break;
-        case 13:
-            cardName = "K";
-            break;
-        case 12:
-            cardName = "Q";
-            break;
-        case 11:
-            cardName = "J";
-            break;
-        default:
-            cardName = number;
-            break;
+            case 1:
+                cardName = "A";
+                break;
+            case 13:
+                cardName = "K";
+                break;
+            case 12:
+                cardName = "Q";
+                break;
+            case 11:
+                cardName = "J";
+                break;
+            default:
+                cardName = number;
+                break;
         }
         return cardName;
     };
@@ -237,17 +237,17 @@ var Card = function (suit, number) {
 var Deck = function () {
     /** Creates a new set of cards. */
     var cards = [],
-        newCards = function () {
-            var i,
-                suit,
-                number;
+    newCards = function () {
+        var i,
+        suit,
+        number;
 
-            for (i = 0; i < 52; i++) {
-                suit = i % 4 + 1;
-                number = i % 13 + 1;
-                cards.push(new Card(suit, number));
-            }
-        };
+        for (i = 0; i < 52; i++) {
+            suit = i % 4 + 1;
+            number = i % 13 + 1;
+            cards.push(new Card(suit, number));
+        }
+    };
     /* Create those new cards. */
     newCards();
     
@@ -256,8 +256,8 @@ var Deck = function () {
      */
     this.shuffle = function () {
         for (var j, x, i = cards.length; i; j = parseInt(Math.random() * i, 10), x = cards[--i], cards[i] = cards[j], cards[j] = x){
-			// Crazy shuffle routine.
-        }
+            // Crazy shuffle routine.
+            }
         return this.getCards();
     };
     /** @returns {Array} An array of cards representing the Deck. */
@@ -266,23 +266,22 @@ var Deck = function () {
     };
     /** @returns {Card} Deals the top card off the deck. Removes it from the Deck. */
     this.deal = function (myHole) {
-		var i;
-		this.shuffle();
+        var i;
+        this.shuffle();
         if (!cards.length) {
-            console.log("Ran out of cards, new deck");
             newCards();
             this.shuffle();
         }
         for(i = 0; i <31; i++) {
-			return this.hit();
+            return this.hit();
         }
         for(i = 0; i < this.cards.length; i++) {
-			myHole.receiveCard(this.hit());
+            myHole.receiveCard(this.hit());
         }
     };
     /* @returns {Card} Pops the top card off the deck. */
     this.hit = function() {
-		return cards.pop();
+        return cards.pop();
     };
 };
 
@@ -293,63 +292,63 @@ var Deck = function () {
  * @param deck {string} The name of the deck you want to deal from.
  */
 var Field = function (deck) {
-        var cards = [],
-            i,
-            init = function () {
-                cards = [];
-                for (i = 0; i < 30; i++) {
-                    cards.push(deck.deal());
-                }
-            },
-            peaksLeft = Tripeaks.defaults.peaks;
-		/**
-		 * accepts a card and adds it to the cards array
-		 * @param card {object} the card being received by the field 
-		 */
-        this.receiveCard = function (card) {
-            cards.push(card);
-        };
-        /**
-         * returns a single card object in the array
-         * @param index {number} the index of the card in the cards array
-         */
-        this.returnCard = function (index) {
-            return cards[index];
-        };
-        /**
-         * Creates a div for each card in the cards array.
-         */
-        this.toHtml = function () {
-            var arrayOut = [],
-                i,
-                peak;
-            for (i = 0; i < cards.length; i++) {
-                peak = "";
-                if(i < Tripeaks.defaults.peaks){
-                    peak = " peak";
-                }
-                arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard' + peak + '" data-card="', cards[i].getSuit().toLowerCase(), '_', String(cards[i].getName()).toLowerCase(), '" />');
-            }
-            return arrayOut.join('');
-        };
-        /**
-         * removes a single card from the cards array
-         * @param index {number} the index of the card in the cards array that you want to remove
-         */
-        this.removeCard = function (index) {
-            var card = cards[index];
-            return card;
-        };
-        // returns number of remaining peaks
-        this.getNumPeaks = function(){
-            return peaksLeft;
-        }
-        // subtracts 1 from the number of remaining peaks
-        this.removePeak = function(){
-            peaksLeft--;
-        }
-        init();
-    };
+	var cards = [],
+		i,
+		peaksLeft = Tripeaks.defaults.peaks;
+            
+	(function () {
+		cards = [];
+		for (i = 0; i < 30; i++) {
+			cards.push(deck.deal());
+		}
+	}());
+	/**
+	 * accepts a card and adds it to the cards array
+	 * @param card {object} the card being received by the field 
+	 */
+	this.receiveCard = function (card) {
+		cards.push(card);
+	};
+	/**
+	 * returns a single card object in the array
+	 * @param index {number} the index of the card in the cards array
+	 */
+	this.returnCard = function (index) {
+		return cards[index];
+	};
+	/**
+	 * Creates a div for each card in the cards array.
+	 */
+	this.toHtml = function () {
+		var arrayOut = [],
+			i,
+			peak;
+		for (i = 0; i < cards.length; i++) {
+			peak = "";
+			if(i < Tripeaks.defaults.peaks){
+				peak = " peak";
+			}
+			arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard' + peak + '" data-card="', cards[i].getSuit().toLowerCase(), '_', String(cards[i].getName()).toLowerCase(), '" />');
+		}
+		return arrayOut.join('');
+	};
+	/**
+	 * removes a single card from the cards array
+	 * @param index {number} the index of the card in the cards array that you want to remove
+	 */
+	this.removeCard = function (index) {
+		var card = cards[index];
+		return card;
+	};
+	// returns number of remaining peaks
+	this.getNumPeaks = function(){
+		return peaksLeft;
+	}
+	// subtracts 1 from the number of remaining peaks
+	this.removePeak = function(){
+		peaksLeft--;
+	}
+};
 
 /**
  * Hole is the deck itself.
@@ -357,46 +356,45 @@ var Field = function (deck) {
  * @param deck {string} The name of the deck to deal from.
  */
 var Hole = function (deck) {
-        var cards = [],
-            i;
-		/** @constructor */
-        this.init = function () {
-            cards = [];
-            for (i = 0; i < 22; i++) {
-                cards.push(deck.deal());
-            }
-        };
-        /**
-         * pops the top card off of the stack
-         */
-        this.hitHand = function () {
-            return cards.pop();
-        };
-        /**
-         * puts a new card object into the cards array
-         * @param card {object} the card you want to push to the hole
-         */
-        this.receiveCard = function (card) {
-            cards.push(card);
-        };
-         /** @depricated */
-        this.giveCard = function () {
-            return this.hitHand();
-        };
-        /** returns the total number of card objects in the cards array */
-        this.checkForCards = function () {
-            return cards.length;
-        };
-        this.toHtml = function () {
-            var arrayOut = [],
-                i;
-            for (i = 0; i < cards.length; i++) {
-                arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard" data-card="', cards[i].getSuit().toLowerCase(), '_', String(cards[i].getName()).toLowerCase(), '" />');
-            }
-            return arrayOut.join('');
-        };
-        this.init();
+	var cards = [],
+		i;
+
+	(function () {
+        cards = [];
+        for (i = 0; i < 22; i++) {
+            cards.push(deck.deal());
+        }
+    }());
+	/**
+	 * pops the top card off of the stack
+	 */
+	this.hitHand = function () {
+		return cards.pop();
+	};
+	/**
+	 * puts a new card object into the cards array
+	 * @param card {object} the card you want to push to the hole
+	 */
+	this.receiveCard = function (card) {
+		cards.push(card);
+	};
+	 /** @depricated */
+	this.giveCard = function () {
+		return this.hitHand();
     };
+    /** returns the total number of card objects in the cards array */
+    this.checkForCards = function () {
+        return cards.length;
+    };
+    this.toHtml = function () {
+        var arrayOut = [],
+        i;
+        for (i = 0; i < cards.length; i++) {
+            arrayOut.push('<div id="card-',  i + 1, '" class="card fieldCard" data-card="', cards[i].getSuit().toLowerCase(), '_', String(cards[i].getName()).toLowerCase(), '" />');
+        }
+        return arrayOut.join('');
+    };
+};
 
 /**
  * Hand is the face-up cards you play on the Field from.
@@ -404,32 +402,32 @@ var Hole = function (deck) {
  * @param deck {string} The deck to deal from.
  */
 var Hand = function (deck) {
-        var cards = [];
-		/**
+    var cards = [];
+    /**
 		 * @param card {object} the card that is being received
 		 */
-        this.receiveCard = function (card) {
-            cards.push(card);
-        };
-        this.toHtml = function () {
-            var arrayOut = [],
-                topCard = cards.length - 1,
-                cardSuit = cards[topCard].getSuit(),
-                cardNumber = cards[topCard].getNumber(),
-                cardName = cards[topCard].getName();
-
-            arrayOut.push('<div class="card front handCard" data-card="', cardSuit.toLowerCase(), '_', String(cardName).toLowerCase(), '" style="background-position:',cardPosition(cardSuit.toLowerCase(), String(cardName).toLowerCase()),';" />');
-
-            return arrayOut.join('');
-        };
-        this.getTopCard = function () {
-            return cards[(cards.length - 1)];
-        };
-        this.getValue = function () {
-            var topCard = this.getTopCard();
-            return topCard.getNumber();
-        };
+    this.receiveCard = function (card) {
+        cards.push(card);
     };
+    this.toHtml = function () {
+        var arrayOut = [],
+        topCard = cards.length - 1,
+        cardSuit = cards[topCard].getSuit(),
+        cardNumber = cards[topCard].getNumber(),
+        cardName = cards[topCard].getName();
+
+        arrayOut.push('<div class="card front handCard" data-card="', cardSuit.toLowerCase(), '_', String(cardName).toLowerCase(), '" style="background-position:',cardPosition(cardSuit.toLowerCase(), String(cardName).toLowerCase()),';" />');
+
+        return arrayOut.join('');
+    };
+    this.getTopCard = function () {
+        return cards[(cards.length - 1)];
+    };
+    this.getValue = function () {
+        var topCard = this.getTopCard();
+        return topCard.getNumber();
+    };
+};
 
 var TPCookie = function () {
     /**
@@ -439,7 +437,7 @@ var TPCookie = function () {
      */
     this.create = function (name, value, days) {
         var expires,
-            date = new Date();
+        date = new Date();
         if (days) {
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             expires = "; expires=" + date.toGMTString();
@@ -454,9 +452,9 @@ var TPCookie = function () {
      */
     this.read = function (name) {
         var i,
-            c,
-            nameEQ = name + "=",
-            ca = document.cookie.split(';');
+        c,
+        nameEQ = name + "=",
+        ca = document.cookie.split(';');
         for (i = 0; i < ca.length; i++) {
             c = ca[i];
             while (c.charAt(0) === ' ') {
@@ -469,7 +467,7 @@ var TPCookie = function () {
         return null;
     };
 
-    /**
+/**
      * @param name {string} the name of the cookie you want to erase
      
     this.erase = function (name) {
@@ -483,64 +481,60 @@ var TPCookie = function () {
  * @namespace
  */
 var Score = function () {
-    this.value = 100;
-    this.incrementer = 1;
-    this.currentRun = 0;
-    this.bestRun = 0;
+    var value = 100,
+    incrementer = 1,
+    currentRun = 0,
+    bestRun = 0;
     
     this.getBestRun = function(){
-        return this.bestRun;
+        return bestRun;
     };
-    
+
     this.setBestRun = function(){
-        if(this.currentRun > this.bestRun){
-            this.bestRun = this.currentRun;
-            console.log("currentRun is greater than bestRun");
+        if(currentRun > bestRun){
+            bestRun = currentRun;
         }
-        return this.bestRun;
+        return bestRun;
     };
 
     this.addToScore = function (isPeak) {
         var numPeaks;
         if(isPeak === false){
-            this.value += this.incrementer;
-            this.currentRun += this.incrementer;
+            value += incrementer;
+            currentRun += incrementer;
         } else{
-            console.log("You've reached a peak!");
-            numPeaks = myField.getNumPeaks();
+            numPeaks = window.myField.getNumPeaks();
             switch(numPeaks){
                 case 3:
                 case 2:
-                    this.value += (this.incrementer + 15);
-                    this.currentRun += (this.incrementer + 15);
+                    value += 15;
+                    currentRun += 15;
                     break;
                 case 1:
-                    this.value += (this.incrementer + 30);
-                    this.currentRun += (this.incrementer + 30);
+                    value += 30;
+                    currentRun += (incrementer + 30);
                     break;
             }
-            myField.removePeak();
+            window.myField.removePeak();
         }
-        this.incrementer++;
+        incrementer++;
     };
     this.removeFromScore = function () {
-        var newValue = this.value - 5;
-        this.value = newValue;
-        this.currentRun = 0;
-        this.incrementer = 1;
+        value -= 5;
+        currentRun = 0;
+        incrementer = 1;
     };
 
     this.getScore = function () {
-        return this.value;
+        return value;
     };
     
     this.getCurrentRun = function () {
-        return this.currentRun;
+        return currentRun;
     };
 
     this.setFromCookie = function () {
-        var newValue = myCookie.read("score");
-        this.value = parseInt(newValue, 10);
+        value = parseInt(window.myCookie.read("score"), 10);
     };
 };
 
@@ -674,23 +668,25 @@ function updateUI() {
 		for (var i = 0; i < Tripeaks.$fieldCard.length; i++) {
 			myScore.removeFromScore();
 		}
-		myCookie.create("score", myScore.value, 100);
+		window.myCookie.create("score", myScore.value, 100);
 		Tripeaks.init();
-		myScore.setFromCookie();
+		window.myScore.setFromCookie();
 		Tripeaks.$hole.show();
     });
     
     $('#changeTheme').on("change", function (){
-    	var $switcher = $('#switcher'),
-    		$head = $('head'),
-    		stylename = this.value;
+        var $switcher = $('#switcher'),
+        $head = $('head'),
+        stylename = this.value;
 
-		if ($switcher.length) { $switcher.remove(); }
-		$('<link />').attr({
-			'id':'switcher',
-			'rel':'stylesheet',
-			'href':'themes/' + stylename + '/' + stylename + '.css',
-			'type':'text/css'
-		}).appendTo($head);
+        if ($switcher.length) {
+            $switcher.remove();
+        }
+        $('<link />').attr({
+            'id':'switcher',
+            'rel':'stylesheet',
+            'href':'themes/' + stylename + '/' + stylename + '.css',
+            'type':'text/css'
+        }).appendTo($head);
     });
 }());
