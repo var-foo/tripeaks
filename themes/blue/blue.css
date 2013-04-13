@@ -1,5 +1,5 @@
 /* Setting the card faces... */
-.front{ background: #fff url(images/largecards.png) no-repeat 0 0; }
+.front{ background: #eed url(images/largecards.png) no-repeat 0 0; }
 
 /* ...and their backs */
 .back,

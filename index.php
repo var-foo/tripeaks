@@ -16,6 +16,7 @@
 			<select id="changeTheme">
 				<option value="default">Default</option>
 				<option value="blue">Blue</option>
+				<option value="ninja">Ninja!</option>
 			</select>
             <div id="info" class="stats">
                 <p>This Run: <span class="statVal" id="currentRun">0</span> pts</p>
