@@ -496,13 +496,16 @@ var Cookie = {
 			return this;
 		};
 	},
-	/* Define a Tripeaks game. */
+	/** Define a Tripeaks game.
+     * @namespace
+     */
 	Tripeaks = {
 		deck: new Deck(),
 		hole: null,
 		hand: null,
 		field: null,
 		score: new Score(),
+        /** @returns {object} the defaults needed for positioning the field */
 		defaults: (function () {
 			var cardWidth = 100,
 				publicObject = {
@@ -519,8 +522,7 @@ var Cookie = {
 		 * @void
 		 */
 		init: function () {
-			var currentScore = this.score.getScore(),
-				rowLimit = this.defaults.peaks,
+			var rowLimit = this.defaults.peaks,
 				nextIndex = rowLimit,
 				startingOffset = 150,
 				topPos = 0,
