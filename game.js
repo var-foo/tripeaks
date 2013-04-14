@@ -125,6 +125,79 @@ var Cookie = {
 		this.getFullName = function () {
 			return this.getName() + this.getSymbol();
 		};
+		/**
+		 * This function sets the background-positions for the cards in the field.
+		 * Created because background-position-x is not supported in firefox.
+		 * @parameter suit {string} the suit of the card to be positioned
+		 * @parameter num {string} the string of the card number - "k" for king, "a" for ace, "5" for 5 etc
+		 * @returns {string} the background position css rule value ex: -155px -400px
+		 * @todo Make this part of the card's properties.
+		 */
+		this.getBackgroundPosition = function () {
+			var bgp,
+				posX = 0,
+				posY = 0,
+				borderWidth = 1;
+			switch (this.getSuit()) {
+			case "Clubs":
+				// Nothing to do here.
+				break;
+			case "Diamonds":
+				posX = Tripeaks.defaults.cardWidth;
+				break;
+			case "Hearts":
+				posX = Tripeaks.defaults.cardWidth * 2;
+				break;
+			case "Spades":
+				posX = Tripeaks.defaults.cardWidth * 3;
+				break;
+			}
+			switch (this.getName()) {
+			case 2:
+				// Nothing to do here.
+				break;
+			case 3:
+				posY = Tripeaks.defaults.cardHeight;
+				break;
+			case 4:
+				posY = Tripeaks.defaults.cardHeight * 2;
+				break;
+			case 5:
+				posY = Tripeaks.defaults.cardHeight * 3;
+				break;
+			case 6:
+				posY = Tripeaks.defaults.cardHeight * 4;
+				break;
+			case 7:
+				posY = Tripeaks.defaults.cardHeight * 5;
+				break;
+			case 8:
+				posY = Tripeaks.defaults.cardHeight * 6;
+				break;
+			case 9:
+				posY = Tripeaks.defaults.cardHeight * 7;
+				break;
+			case 10:
+				posY = Tripeaks.defaults.cardHeight * 8;
+				break;
+			case "J":
+				posY = Tripeaks.defaults.cardHeight * 9;
+				break;
+			case "Q":
+				posY = Tripeaks.defaults.cardHeight * 10;
+				break;
+			case "K":
+				posY = Tripeaks.defaults.cardHeight * 11;
+				break;
+			case "A":
+				posY = Tripeaks.defaults.cardHeight * 12;
+				break;
+			}
+			posX += borderWidth;
+			posY += borderWidth;
+			bgp = "-" + posX + "px -" + posY + "px";
+			return bgp;
+		}
 	},
 	/** @constructor A set of 52 cards. */
 	Deck = function () {
@@ -143,13 +216,13 @@ var Cookie = {
 		/* Create those new cards. */
 		newCards();
 		/** Shuffles the cards. Modifies the private instance of the cards array.
-		 * @returns {Array} An array of Cards representing the shuffled version of the deck.
+		 * @returns this For chainability
 		 */
 		this.shuffle = function () {
 			for (var j, x, i = cards.length; i; j = parseInt(Math.random() * i, 10), x = cards[--i], cards[i] = cards[j], cards[j] = x) {
 				// Crazy shuffle routine.
 			}
-			return this.getCards();
+			return this;
 		};
 		/** @returns {Array} An array of cards representing the Deck. */
 		this.getCards = function () {
@@ -185,8 +258,10 @@ var Cookie = {
 		var cards = [],
 			i,
 			peaksLeft = Tripeaks.defaults.peaks;
+
+		this.cardCount = 30;
 		/* Create the field, populate the cards array. */
-		for (i = 0; i < 30; i++) {
+		for (i = 0; i < this.cardCount; i++) {
 			cards.push(deck.deal());
 		}
 		/**
@@ -215,7 +290,7 @@ var Cookie = {
 				if (i < Tripeaks.defaults.peaks) {
 					peak = " peak";
 				}
-				arrayOut.push('<div id="card-', i + 1, '" class="card fieldCard' + peak + '" data-card="', cards[i].getSuit().toLowerCase(), '_', String(cards[i].getName()).toLowerCase(), '" />');
+				arrayOut.push('<div id="card-', i + 1, '" class="card fieldCard' + peak + '" data-card="', cards[i].getSuit().toLowerCase(), '_', String(cards[i].getName()).toLowerCase(), '" style="background-position:', cards[i].getBackgroundPosition() ,';" />');
 			}
 			return arrayOut.join('');
 		};
@@ -228,7 +303,6 @@ var Cookie = {
 			for (i = 0; i < cards.length; i++) {
 				arrayOut.push('#card-' + (i + 1));
 			}
-			//console.log(arrayOut.join());
 			return $(arrayOut.join());
 		};
 		/**
@@ -288,7 +362,9 @@ var Cookie = {
 		this.checkForCards = function () {
 			return cards.length;
 		};
+		/** References the DOM element used to display the hole. */
 		this.$element = $("#hole");
+		/** Updates the DOM element associated with this object. */
 		this.updateDOM = function () {
 			var $cardsLeft = $("#cardsLeft");
 			$cardsLeft.html(this.checkForCards());
@@ -296,73 +372,6 @@ var Cookie = {
 				this.$element.hide();
 			}
 		};
-	},
-	/**
-	 * This function sets the background-positions for the cards in the field.
-	 * Created because background-position-x is not supported in firefox.
-	 * @parameter suit {string} the suit of the card to be positioned
-	 * @parameter num {string} the string of the card number - "k" for king, "a" for ace, "5" for 5 etc
-	 * @returns {string} the background position css rule value ex: -155px -400px
-	 * @todo Make this part of the card's properties.
-	 */
-	cardPosition = function (suit, num) {
-		var bgp,
-			posX = 0,
-			posY = 0,
-			borderWidth = 1;
-		switch (suit) {
-		case "diamonds":
-			posX = Tripeaks.defaults.cardWidth;
-			break;
-		case "hearts":
-			posX = Tripeaks.defaults.cardWidth * 2;
-			break;
-		case "spades":
-			posX = Tripeaks.defaults.cardWidth * 3;
-			break;
-		}
-		switch (num) {
-		case "3":
-			posY = Tripeaks.defaults.cardHeight;
-			break;
-		case "4":
-			posY = Tripeaks.defaults.cardHeight * 2;
-			break;
-		case "5":
-			posY = Tripeaks.defaults.cardHeight * 3;
-			break;
-		case "6":
-			posY = Tripeaks.defaults.cardHeight * 4;
-			break;
-		case "7":
-			posY = Tripeaks.defaults.cardHeight * 5;
-			break;
-		case "8":
-			posY = Tripeaks.defaults.cardHeight * 6;
-			break;
-		case "9":
-			posY = Tripeaks.defaults.cardHeight * 7;
-			break;
-		case "10":
-			posY = Tripeaks.defaults.cardHeight * 8;
-			break;
-		case "j":
-			posY = Tripeaks.defaults.cardHeight * 9;
-			break;
-		case "q":
-			posY = Tripeaks.defaults.cardHeight * 10;
-			break;
-		case "k":
-			posY = Tripeaks.defaults.cardHeight * 11;
-			break;
-		case "a":
-			posY = Tripeaks.defaults.cardHeight * 12;
-			break;
-		}
-		posX += borderWidth;
-		posY += borderWidth;
-		bgp = "-" + posX + "px -" + posY + "px";
-		return bgp;
 	},
 	/**
 	 * Hand is the face-up cards you play on the Field from.
@@ -373,10 +382,11 @@ var Cookie = {
 		var cards = [];
 		/**
 		 * @param card {object} the card that is being received
-		 * @void
+		 * @return this For chainability
 		 */
 		this.receiveCard = function (card) {
 			cards.push(card);
+			return this;
 		};
 		/**
 		 * @returns {string} the DOM element of a card
@@ -387,7 +397,7 @@ var Cookie = {
 				cardSuit = cards[topCard].getSuit(),
 				cardNumber = cards[topCard].getNumber(),
 				cardName = cards[topCard].getName();
-			arrayOut.push('<div class="card front handCard" data-card="', cardSuit.toLowerCase(), '_', String(cardName).toLowerCase(), '" style="background-position:', cardPosition(cardSuit.toLowerCase(), String(cardName).toLowerCase()), ';" />');
+			arrayOut.push('<div class="card front handCard" data-card="', cardSuit.toLowerCase(), '_', String(cardName).toLowerCase(), '" style="background-position:', cards[topCard].getBackgroundPosition(), ';" />');
 			return arrayOut.join('');
 		};
 		/** @returns {object} the top card on the pile */
@@ -398,7 +408,12 @@ var Cookie = {
 		this.getValue = function () {
 			return this.getTopCard().getNumber();
 		};
+		/**
+		 * References the DOM element used to display the hand.
+		 * @var
+		 */
 		this.$element = $('#hand');
+		/** Updates the DOM element associated with this object. */
 		this.updateDOM = function () {
 			this.$element.html(this.toHtml());
 		};
@@ -466,48 +481,23 @@ var Cookie = {
 		this.getCurrentRun = function () {
 			return currentRun;
 		};
+		/** References the DOM element used to display the score. */
 		this.$element = $("#score");
+		/**
+		 * Saves the score to a cookie.
+		 * @return this For chainability
+		 */
 		this.save = function () {
 			Cookie.create("score", value, 100);
+			return this;
 		};
-	},
-	/**
-	 * updateUI shows the stat updates, updates the score cookie and toggles card visibility.
-	 * @void
-	 */
-	updateUI = function () {
-		var currentScore = Tripeaks.score.getScore(),
-			currentRun = Tripeaks.score.getCurrentRun(),
-			bestRun = Tripeaks.score.setBestRun(),
-			arrTop = [],
-			arrLeft = [];
-		Tripeaks.score.$element.text(currentScore);
-		$("#currentRun").text(currentRun);
-		$("#bestRun").text(bestRun);
-		Tripeaks.score.save();
-		// Two .each loops on the same collection of nodes seems strange,
-		// but we need to create the entire array before we start checking
-		// the cards against it. This is a good case for having a small db.
-		Tripeaks.field.getHtmlElements().each(function () {
-			var $this = $(this),
-				$thisLeft = parseInt($this.offset().left, 10),
-				$thisTop = parseInt($this.offset().top, 10);
-			arrTop.push($thisTop);
-			arrLeft.push($thisLeft);
-		}).each(function (index, el) {
-			var $this = $(this),
-				$thisLeft = parseInt($this.offset().left, 10),
-				$thisTop = parseInt($this.offset().top, 10),
-				i;
-			for (i = 0; i < arrTop.length; i++) {
-				if (arrTop[i] === $thisTop + 75 && (arrLeft[i] === $thisLeft + 50 || arrLeft[i] === $thisLeft - 50)) {
-					$this.removeClass("front").addClass("back");
-					break;
-				} else {
-					$this.removeClass("back").addClass("front");
-				}
-			}
-		});
+		/**
+		 * @return this For chainability
+		 */
+		this.updateDOM = function (){
+			this.$element.text(value);
+			return this;
+		};
 	},
 	/* Define a Tripeaks game. */
 	Tripeaks = {
@@ -527,7 +517,8 @@ var Cookie = {
 				};
 			return publicObject;
 		}()),
-		/** Initializes the hand
+		/**
+		 * Initializes the game
 		 * @void
 		 */
 		init: function () {
@@ -545,13 +536,12 @@ var Cookie = {
 			this.hole = new Hole(this.deck);
 			this.hand = new Hand(this.deck);
 			this.field = new Field(this.deck);
-			this.deck.shuffle();
-			this.deck.deal();
-			this.field.updateDOM();
+			this.deck.shuffle().deal();
 			this.hand.receiveCard(this.hole.hitHand());
-			this.hand.updateDOM();
-			this.hole.updateDOM();
+			
 			/* Animate the field cards from the Hole. */
+			this.hole.updateDOM();
+			this.field.updateDOM();
 			for (cardCount = 1; cardCount <= this.defaults.peaks * 10; cardCount++) {
 				// The new row's first card is good to go
 				if (!newRow) {
@@ -572,9 +562,17 @@ var Cookie = {
 				}
 				// Animate the card using jQuery
 				$("#card-" + cardCount).addClass("back").animate({
-					top: topPos,
-					left: leftPos
-				}, 700, updateUI);
+						top: topPos,
+						left: leftPos
+					},
+					500,
+					function(){
+						/* Only run when the last card is dealt */
+						if($(this).attr("id") == "card-"+Tripeaks.defaults.peaks * 10){
+							Tripeaks.updateUI();
+							Tripeaks.hand.updateDOM();
+						}
+					});
 				if (cardCount === nextIndex) {
 					// we have reached the end of this row
 					rowLimit += this.defaults.peaks;
@@ -591,21 +589,12 @@ var Cookie = {
 					newRow = true;
 				}
 			}
-			$(".card").each(function () {
-				var $this = $(this),
-					card = $this.attr("data-card"),
-					cardInfo = card.split("_"),
-					suit = cardInfo[0],
-					num = cardInfo[1],
-					css = cardPosition(suit, num);
-				$this.css("backgroundPosition", css);
-			});
+			
 			this.hole.$element.on("click", function () {
-				Tripeaks.hand.receiveCard(Tripeaks.hole.hitHand());
-				Tripeaks.hand.updateDOM();
+				Tripeaks.hand.receiveCard(Tripeaks.hole.hitHand()).updateDOM();
 				Tripeaks.score.removeFromScore();
-				updateUI();
-				Tripeaks.hole.updateDOM();
+				Tripeaks.updateUI();
+				//Tripeaks.hole.updateDOM();
 			});
 			this.field.getHtmlElements().on("click", function () {
 				var $clicked = $(this),
@@ -618,9 +607,8 @@ var Cookie = {
 						if ($clicked.hasClass('peak')) {
 							isPeak = true;
 						}
-						Tripeaks.hand.receiveCard(Tripeaks.field.removeCard(clickedIndex));
+						Tripeaks.hand.receiveCard(Tripeaks.field.removeCard(clickedIndex)).updateDOM();
 						$clicked.removeClass("fieldCard").hide();
-						Tripeaks.hand.updateDOM();
 						Tripeaks.score.addToScore(isPeak);
 					};
 				/* Define an easy way to tell if a card is face-down, and if it is, "lock" the card */
@@ -645,7 +633,41 @@ var Cookie = {
 						}
 					}
 				}
-				updateUI();
+				Tripeaks.updateUI();
+			});
+		},
+		/**
+		 * Shows the stat updates, updates the score cookie and toggles card visibility.
+		 * @void
+		 */
+		updateUI: function () {
+			var arrTop = [],
+				arrLeft = [];
+
+			this.score.updateDOM().save();
+			$("#currentRun").text(this.score.getCurrentRun());
+			$("#bestRun").text(this.score.setBestRun());
+			
+			// Two .each loops on the same collection of nodes seems strange,
+			// but we need to create the entire array before we start checking
+			// the cards against it. This is a good case for having a small db.
+			this.field.getHtmlElements().each(function () {
+				var $this = $(this);
+				arrTop.push($this.offset().top);
+				arrLeft.push($this.offset().left);
+			}).each(function (index, el) {
+				var $this = $(this),
+					thisLeft = $this.offset().left,
+					thisTop = $this.offset().top,
+					i;
+				for (i = 0; i < arrTop.length; i++) {
+					if (arrTop[i] === thisTop + Tripeaks.defaults.topOffset && (arrLeft[i] === thisLeft + Tripeaks.defaults.leftOffset || arrLeft[i] === thisLeft - Tripeaks.defaults.leftOffset)) {
+						$this.removeClass("front").addClass("back");
+						break;
+					} else {
+						$this.removeClass("back").addClass("front");
+					}
+				}
 			});
 		}
 	};
@@ -656,7 +678,7 @@ var Cookie = {
 	/* Reset button */
 	$("#newHand").on("click", function () {
 		var i;
-		for (i = 0; i < Tripeaks.field.getHtmlElements().length; i++) {
+		for (i = 0; i < Tripeaks.field.getHtmlElements().filter(":visible").length; i++) {
 			Tripeaks.score.removeFromScore();
 		}
 		Tripeaks.score.save();
