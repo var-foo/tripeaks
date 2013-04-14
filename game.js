@@ -589,6 +589,8 @@ var Cookie = {
 				Tripeaks.hand.receiveCard(Tripeaks.hole.hitHand()).updateDOM();
 				Tripeaks.score.removeFromScore();
 				Tripeaks.updateUI();
+				// Updates cards left.
+				Tripeaks.hole.updateDOM();
 			});
 			this.field.getHtmlElements().on("click", function () {
 				var $clicked = $(this),
