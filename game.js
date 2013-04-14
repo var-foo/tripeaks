@@ -128,8 +128,6 @@ var Cookie = {
 		/**
 		 * This function sets the background-positions for the cards in the field.
 		 * Created because background-position-x is not supported in firefox.
-		 * @parameter suit {string} the suit of the card to be positioned
-		 * @parameter num {string} the string of the card number - "k" for king, "a" for ace, "5" for 5 etc
 		 * @returns {string} the background position css rule value ex: -155px -400px
 		 * @todo Make this part of the card's properties.
 		 */
@@ -258,7 +256,6 @@ var Cookie = {
 		var cards = [],
 			i,
 			peaksLeft = Tripeaks.defaults.peaks;
-
 		this.cardCount = 30;
 		/* Create the field, populate the cards array. */
 		for (i = 0; i < this.cardCount; i++) {
@@ -538,11 +535,10 @@ var Cookie = {
 			this.field = new Field(this.deck);
 			this.deck.shuffle().deal();
 			this.hand.receiveCard(this.hole.hitHand());
-			
 			/* Animate the field cards from the Hole. */
 			this.hole.updateDOM();
 			this.field.updateDOM();
-			for (cardCount = 1; cardCount <= this.defaults.peaks * 10; cardCount++) {
+			for (cardCount = 1; cardCount <= this.field.cardCount; cardCount++) {
 				// The new row's first card is good to go
 				if (!newRow) {
 					// This happens regardless.
@@ -568,7 +564,7 @@ var Cookie = {
 					500,
 					function(){
 						/* Only run when the last card is dealt */
-						if($(this).attr("id") == "card-"+Tripeaks.defaults.peaks * 10){
+						if($(this).attr("id") == "card-"+Tripeaks.field.cardCount){
 							Tripeaks.updateUI();
 							Tripeaks.hand.updateDOM();
 						}
@@ -589,12 +585,10 @@ var Cookie = {
 					newRow = true;
 				}
 			}
-			
 			this.hole.$element.on("click", function () {
 				Tripeaks.hand.receiveCard(Tripeaks.hole.hitHand()).updateDOM();
 				Tripeaks.score.removeFromScore();
 				Tripeaks.updateUI();
-				//Tripeaks.hole.updateDOM();
 			});
 			this.field.getHtmlElements().on("click", function () {
 				var $clicked = $(this),
@@ -643,11 +637,9 @@ var Cookie = {
 		updateUI: function () {
 			var arrTop = [],
 				arrLeft = [];
-
 			this.score.updateDOM().save();
 			$("#currentRun").text(this.score.getCurrentRun());
 			$("#bestRun").text(this.score.setBestRun());
-			
 			// Two .each loops on the same collection of nodes seems strange,
 			// but we need to create the entire array before we start checking
 			// the cards against it. This is a good case for having a small db.
