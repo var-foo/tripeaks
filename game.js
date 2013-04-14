@@ -153,7 +153,7 @@ Deck = function () {
 
 /**
  * Field is the peaks themselves. This does not include the hole or hand.
- * @namespace
+ * @constructor
  * @param deck {string} The name of the deck you want to deal from.
  */
 Field = function (deck) {
@@ -222,7 +222,7 @@ Field = function (deck) {
 
 /**
  * Hole is the deck itself.
- * @namespace
+ * @constructor
  * @param deck {string} The name of the deck to deal from.
  */
 Hole = function (deck) {
@@ -335,7 +335,7 @@ cardPosition = function(suit, num) {
 
 /**
  * Hand is the face-up cards you play on the Field from.
- * @namespace
+ * @constructor
  * @param deck {string} The deck to deal from.
  */
 Hand = function (deck) {
@@ -371,7 +371,7 @@ Hand = function (deck) {
         return topCard.getNumber();
     };
 },
-/** @namespace */
+/** @constructor */
 TPCookie = function () {
     /**
      * @param name {string} the name of the cookie you want to create
@@ -414,7 +414,7 @@ TPCookie = function () {
 
 /**
  * Score is the player's... score.
- * @namespace
+ * @constructor
  */
 Score = function () {
     var value = 100,
