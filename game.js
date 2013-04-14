@@ -6,7 +6,7 @@ var $field = $("#field"),
     $currentRun = $("#currentRun"),
     $bestRun = $("#bestRun"),
     $cardsLeft = $("#cardsLeft"),
-    $fieldCard = $(".fieldCard");
+    $fieldCard = $(".fieldCard"),
     defaults = {
 		peaks: 3,
 		cardWidth:100,
@@ -520,17 +520,13 @@ function init() {
     window.myCookie = new TPCookie();
 
     var currentScore = window.myScore.getScore(),
-        defaults = {
-            peaks: 3,
-            topOffset: 75,
-            cardWidth: 100,
-            leftOffset:150
-        },
-        rowLimit = defaults.peaks,
+        rowLimit = window.defaults.peaks,
         nextIndex = rowLimit,
+        topOffset = 75,
+        leftOffset = 150,
         topPos = 0,
-        leftPos = defaults.leftOffset,
-        gapWidth = 300,
+        leftPos = leftOffset,
+        gapWidth = window.defaults.peaks * window.defaults.cardWidth,
         grouping = 1,
         groupCount,
         cardCount,
@@ -538,23 +534,23 @@ function init() {
 
     window.myDeck.shuffle();
     window.myDeck.deal();
-    $field.html(window.myField.toHtml());
+    window.$field.html(window.myField.toHtml());
     window.myHand.receiveCard(window.myHole.hitHand());
-    $hand.html(window.myHand.toHtml());
-    $cardsLeft.html(window.myHole.checkForCards());
+    window.$hand.html(window.myHand.toHtml());
+    window.$cardsLeft.html(window.myHole.checkForCards());
 
-    if (window.myCookie.read("score") == null) {
+    if (window.myCookie.read("score") === null) {
         window.myCookie.create("score", currentScore, 100);
     }else{
         window.myScore.setFromCookie();	
     }
-	
+
     /* Animate the field cards from the Hole. */
-    for (cardCount=1; cardCount <= defaults.peaks*10; cardCount++){
+    for (cardCount=1; cardCount <= window.defaults.peaks*10; cardCount++){
         // The new row's first card is good to go
         if (!newRow){
             // This happens regardless.
-            leftPos += defaults.cardWidth;
+            leftPos += window.defaults.cardWidth;
             if( groupCount === grouping){
                 // Add gap and reset group counter.
                 leftPos += gapWidth;
@@ -569,62 +565,59 @@ function init() {
             groupCount = 1;
         }
         // Animate the card using jQuery
-        $("#card-" + cardCount).addClass("back").animate({
-            top: topPos, 
-            left: leftPos
-        },700, updateUI);
-		
+        $("#card-"+cardCount).addClass("back").animate({ top:topPos, left:leftPos },700, updateUI);
+
         if (cardCount === nextIndex){
             // we have reached the end of this row
-            rowLimit += defaults.peaks;
-            nextIndex = cardCount + rowLimit;
-			
+            rowLimit += window.defaults.peaks;
+            nextIndex = cardCount+rowLimit;
+
             // reset top position accordingly
-            topPos += defaults.topOffset;
-			
+            topPos += topOffset;
+
             // reset left position accordingly
-            defaults.leftOffset -= 50;
-            leftPos = defaults.leftOffset;
-			
+            leftOffset -= (window.defaults.cardWidth/2);
+            leftPos = leftOffset;
+
             // for each row, we knock a hundred pixels out of the gap.
-            gapWidth -= 100;
-			
+            gapWidth -= window.defaults.cardWidth;
+
             // increase the grouping by 1 - grouping is also row count.
             grouping++;
             newRow = true;
         }
     }
 
-	
-    $hole.on("click", function () {
+
+    window.$hole.on("click", function () {
+        var cardsLeft;
         window.myHand.receiveCard(window.myHole.hitHand());
-        $hand.html(window.myHand.toHtml());
+        window.$hand.html(window.myHand.toHtml());
         window.myScore.removeFromScore();
         updateUI();
-        if ( !!window.myHole.checkForCards() ) {
-            $cardsLeft.html(window.myHole.checkForCards());
-        } else {
-            $hole.hide();
+        cardsLeft = window.myHole.checkForCards();
+        window.$cardsLeft.html(cardsLeft);
+        if ( !cardsLeft ) {
+            window.$hole.hide();
         }
-
     });
 
     $(".fieldCard").on("click", function () {
         var $clicked = $(this),
-        clickedId = $clicked.attr("id"),
-        clickedIndex = (clickedId.split("-")[1]) - 1,
-        clickedValue = (window.myField.returnCard(clickedIndex)).getNumber(),
-        handVal = window.myHand.getValue(),
-        isPeak = false,
-        success = function () {
-            if($clicked.hasClass('peak')){
-                isPeak = true;
-            }
-           window. myHand.receiveCard(window.myField.removeCard(clickedIndex));
-            $clicked.removeClass("fieldCard").hide();
-            $hand.html(window.myHand.toHtml());
-            window.myScore.addToScore(isPeak);
-        };
+            clickedId = $clicked.attr("id"),
+            clickedIndex = (clickedId.split("-")[1]) - 1,
+            clickedValue = (window.myField.returnCard(clickedIndex)).getNumber(),
+            handVal = window.myHand.getValue(),
+            isPeak = false,
+            success = function () {
+                if($clicked.hasClass('peak')){
+                    isPeak = true;
+                }
+                window.myHand.receiveCard(window.myField.removeCard(clickedIndex));
+                $clicked.removeClass("fieldCard").hide();
+                window.$hand.html(window.myHand.toHtml());
+                window.myScore.addToScore(isPeak);
+            };
         /* Define an easy way to tell if a card is face-down, and if it is, "lock" the card */
         //if the clicked card is visible...
         if (!$clicked.hasClass("back")) {
