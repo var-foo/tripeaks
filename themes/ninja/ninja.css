@@ -8,3 +8,6 @@ body { background:#111; }
 #hole.back {
 	background:#333 url(images/card-back.png) no-repeat -1px -1px !important; /* The !important needs to stay since the background position gets inlined. */
 }
+.card:hover
+.handCard:hover,
+#hole:hover { border-color: #000; }
