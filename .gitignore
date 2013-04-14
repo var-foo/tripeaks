@@ -1,3 +1,5 @@
 /nbproject/
 grunt.js
 .settings
+doc/
+node_modules/

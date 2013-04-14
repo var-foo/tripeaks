@@ -1,20 +1,24 @@
 // Set up some globals
 var $field = $("#field"),
-    $hole = $("#hole"),
-    $hand = $("#hand"),
-    $score = $("#score"),
-    $currentRun = $("#currentRun"),
-    $bestRun = $("#bestRun"),
-    $cardsLeft = $("#cardsLeft"),
-    $fieldCard = $(".fieldCard"),
-    defaults = {
-		peaks: 3,
-		cardWidth:100,
-		cardHeight:144
-	};
+$hole = $("#hole"),
+$hand = $("#hand"),
+$score = $("#score"),
+$currentRun = $("#currentRun"),
+$bestRun = $("#bestRun"),
+$cardsLeft = $("#cardsLeft"),
+$fieldCard = $(".fieldCard"),
+defaults = {
+    peaks: 3,
+    cardWidth:100,
+    cardHeight:144
+},
 
-/** @constructor */
-var Card = function (suit, number) {
+/** 
+ * @constructor 
+ * @parameter suit {Number} The number associated with the suit (1 is Hearts, 2 is Clubs, 3 is Spades, 4 is Diamonds)
+ * @parameter number {Number} The number of the card ex A is 1 K is 13
+ */
+Card = function (suit, number) {
     /** @returns {Number} The number of the card in the deck. (1-52) */
     this.getNumber = function () {
         return number;
@@ -94,9 +98,9 @@ var Card = function (suit, number) {
     this.getFullName = function () {
         return this.getName() + this.getSymbol();
     };
-};
+},
 /** @constructor */
-var Deck = function () {
+Deck = function () {
     /** Creates a new set of cards. */
     var cards = [],
     newCards = function () {
@@ -112,7 +116,7 @@ var Deck = function () {
     };
     /* Create those new cards. */
     newCards();
-    
+
     /** Shuffles the cards. Modifies the private instance of the cards array.
      * @returns {Array} An array of Cards representing the shuffled version of the deck.
      */
@@ -145,15 +149,14 @@ var Deck = function () {
     this.hit = function() {
         return cards.pop();
     };
-};
-
+},
 
 /**
  * Field is the peaks themselves. This does not include the hole or hand.
  * @namespace
  * @param deck {string} The name of the deck you want to deal from.
  */
-var Field = function (deck) {
+Field = function (deck) {
     var cards = [],
     i,
     numPeaks = 3;
@@ -197,26 +200,32 @@ var Field = function (deck) {
     /**
      * removes a single card from the cards array
      * @param index {number} the index of the card in the cards array that you want to remove
+     * @returns {object} the card to be removed
      */
     this.removeCard = function (index) {
         var card = cards[index];
         return card;
     };
-
+    /**
+     * @returns {number} the number of peaks left on the field
+     */
     this.getNumPeaks = function(){
         return numPeaks;
     };
+    /** Subtracts one from the number of peaks on the field 
+     * @void
+     */
     this.removePeak = function(){
         numPeaks --;
     };
-};
+},
 
 /**
  * Hole is the deck itself.
  * @namespace
  * @param deck {string} The name of the deck to deal from.
  */
-var Hole = function (deck) {
+Hole = function (deck) {
     var cards = [],
     i;
     /** @constructor */
@@ -228,6 +237,7 @@ var Hole = function (deck) {
     }());
     /**
      * pops the top card off of the stack
+     * @returns {object} the next card in the deck
      */
     this.hitHand = function () {
         return cards.pop();
@@ -235,14 +245,16 @@ var Hole = function (deck) {
     /**
      * puts a new card object into the cards array
      * @param card {object} the card you want to push to the hole
+     * @void
      */
     this.receiveCard = function (card) {
         cards.push(card);
     };
-    /** returns the total number of card objects in the cards array */
+    /** @returns {number} the total number of card objects in the cards array */
     this.checkForCards = function () {
         return cards.length;
     };
+    /** @returns {String} the DOM element for each card */
     this.toHtml = function () {
         var arrayOut = [],
         i;
@@ -251,86 +263,93 @@ var Hole = function (deck) {
         }
         return arrayOut.join('');
     };
-};
-    
+},
+
 /**
  * This function sets the background-positions for the cards in the field.
  * Created because background-position-x is not supported in firefox.
+ * @parameter suit {string} the suit of the card to be positioned
+ * @parameter num {string} the string of the card number - "k" for king, "a" for ace, "5" for 5 etc
+ * @returns {string} the background position css rule value ex: -155px -400px
  */
-function cardPosition(suit, num) {
-	var bgp,
-		posX = 0,
-		posY = 0,
-		borderWidth = 1;
+cardPosition = function(suit, num) {
+    var bgp,
+        posX = 0,
+        posY = 0,
+        borderWidth = 1;
 
-	switch (suit) {
-		case "diamonds":
-			posX = window.defaults.cardWidth;
-			break;
-		case "hearts":
-			posX = window.defaults.cardWidth*2;
-			break;
-		case "spades":
-			posX = window.defaults.cardWidth*3;
-			break;
-	}
-	switch (num) {
-		case "3":
-			posY = window.defaults.cardHeight;
-			break;
-		case "4":
-			posY = window.defaults.cardHeight*2;
-			break;
-		case "5":
-			posY = window.defaults.cardHeight*3;
-			break;
-		case "6":
-			posY = window.defaults.cardHeight*4;
-			break;
-		case "7":
-			posY = window.defaults.cardHeight*5;
-			break;
-		case "8":
-			posY = window.defaults.cardHeight*6;
-			break;
-		case "9":
-			posY = window.defaults.cardHeight*7;
-			break;
-		case "10":
-			posY = window.defaults.cardHeight*8;
-			break;
-		case "j":
-			posY = window.defaults.cardHeight*9;
-			break;
-		case "q":
-			posY = window.defaults.cardHeight*10;
-			break;
-		case "k":
-			posY = window.defaults.cardHeight*11;
-			break;
-		case "a":
-			posY = window.defaults.cardHeight*12;
-			break;
-	}
-	posX += borderWidth;
-	posY += borderWidth;
-	bgp = "-" + posX + "px -" + posY + "px";
-	return bgp;
-}
+    switch (suit) {
+        case "diamonds":
+            posX = window.defaults.cardWidth;
+            break;
+        case "hearts":
+            posX = window.defaults.cardWidth*2;
+            break;
+        case "spades":
+            posX = window.defaults.cardWidth*3;
+            break;
+    }
+    switch (num) {
+        case "3":
+            posY = window.defaults.cardHeight;
+            break;
+        case "4":
+            posY = window.defaults.cardHeight*2;
+            break;
+        case "5":
+            posY = window.defaults.cardHeight*3;
+            break;
+        case "6":
+            posY = window.defaults.cardHeight*4;
+            break;
+        case "7":
+            posY = window.defaults.cardHeight*5;
+            break;
+        case "8":
+            posY = window.defaults.cardHeight*6;
+            break;
+        case "9":
+            posY = window.defaults.cardHeight*7;
+            break;
+        case "10":
+            posY = window.defaults.cardHeight*8;
+            break;
+        case "j":
+            posY = window.defaults.cardHeight*9;
+            break;
+        case "q":
+            posY = window.defaults.cardHeight*10;
+            break;
+        case "k":
+            posY = window.defaults.cardHeight*11;
+            break;
+        case "a":
+            posY = window.defaults.cardHeight*12;
+            break;
+    }
+    posX += borderWidth;
+    posY += borderWidth;
+    bgp = "-" + posX + "px -" + posY + "px";
+    return bgp;
+},
 
 /**
  * Hand is the face-up cards you play on the Field from.
  * @namespace
  * @param deck {string} The deck to deal from.
  */
-var Hand = function (deck) {
+Hand = function (deck) {
     var cards = [];
     /**
-		 * @param card {object} the card that is being received
-		 */
+    * @param card {object} the card that is being received
+    * @void
+    */
     this.receiveCard = function (card) {
         cards.push(card);
     };
+    /**
+     * @returns {string} the DOM element of a card
+     */
     this.toHtml = function () {
         var arrayOut = [],
         topCard = cards.length - 1,
@@ -342,16 +361,18 @@ var Hand = function (deck) {
 
         return arrayOut.join('');
     };
+    /** @returns {object} the top card on the pile */
     this.getTopCard = function () {
         return cards[(cards.length - 1)];
     };
+    /** @returns {string} string representation of the card number */
     this.getValue = function () {
         var topCard = this.getTopCard();
         return topCard.getNumber();
     };
-};
-
-var TPCookie = function () {
+},
+/** @namespace */
+TPCookie = function () {
     /**
      * @param name {string} the name of the cookie you want to create
      * @param value {number} the value of the score you want to set
@@ -371,6 +392,7 @@ var TPCookie = function () {
 
     /**
      * @param name {string} the name of the cookie you want to read
+     * @returns null
      */
     this.read = function (name) {
         var i,
@@ -388,29 +410,35 @@ var TPCookie = function () {
         }
         return null;
     };
-};
+},
 
 /**
  * Score is the player's... score.
  * @namespace
  */
-var Score = function () {
+Score = function () {
     var value = 100,
     incrementer = 1,
     currentRun = 0,
     bestRun = 0;
-    
+
+    /** @returns {number} the best run of the hand */
     this.getBestRun = function(){
         return bestRun;
     };
-
+    /** @returns {number} best run so far */
     this.setBestRun = function(){
         if(currentRun > bestRun){
             bestRun = currentRun;
         }
         return bestRun;
     };
-
+    
+    /**
+     * Adds the appropriate amount to your score. Fires when a card in the field is clicked on and causes score to go up
+     * @parameter isPeak {bool} whether the card clicked was a peak or not
+     * @void
+     */
     this.addToScore = function (isPeak) {
         var numPeaks;
         if(isPeak === false){
@@ -433,26 +461,33 @@ var Score = function () {
         }
         incrementer++;
     };
+    /** Remove points from the score and reset the score incrementer
+     * @void
+     */
     this.removeFromScore = function () {
         value -= 5;
         currentRun = 0;
         incrementer = 1;
     };
-
+    /** @return {number} the score */
     this.getScore = function () {
         return value;
     };
-    
+    /** @return {number} the amount of points in the current run */
     this.getCurrentRun = function () {
         return currentRun;
     };
-
+    /** Sets the score from the cookie
+     * @void
+     */
     this.setFromCookie = function () {
         value = parseInt(window.myCookie.read("score"), 10);
     };
-};
-
-function fieldPosition() {
+},
+/** Set the field position of all the cards
+ * @void
+ */
+fieldPosition = function() {
     var cards = $(".card");
     cards.each(function () {
         var $this = $(this),
@@ -464,18 +499,18 @@ function fieldPosition() {
 
         $this.css("backgroundPosition", css);
     });
-}
+},
 /**
  * updateUI shows the stat updates, updates the score cookie and toggles card visibility.
+ * @void
  */
-function updateUI() {
+updateUI = function() {
     var currentScore = window.myScore.getScore(),
         currentRun = window.myScore.getCurrentRun(),
         bestRun = window.myScore.setBestRun(),
-        $score = $("#score"),
         arrTop = [],
         arrLeft = [];
-    
+
     window.$fieldCard = $(".fieldCard");
     window.$score.text(currentScore);
     window.$currentRun.text(currentRun);
@@ -510,8 +545,11 @@ function updateUI() {
             }
         }
     });
-}
-function init() {
+},
+/** Initializes the hand
+ * @void
+ */
+init = function() {
     window.myDeck = new Deck();
     window.myHole = new Hole(window.myDeck);
     window.myHand = new Hand(window.myDeck);
@@ -588,7 +626,6 @@ function init() {
         }
     }
 
-
     window.$hole.on("click", function () {
         var cardsLeft;
         window.myHand.receiveCard(window.myHole.hitHand());
@@ -642,7 +679,7 @@ function init() {
         }
         updateUI();
     });
-}
+};
 
 //Stuff in here only runs exactly one time per page load...
 (function () {
