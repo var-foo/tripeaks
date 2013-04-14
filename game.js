@@ -599,7 +599,7 @@ Tripeaks.init = function () {
 			500,
 			function(){
 				/* Only run when the last card is dealt */
-				if($(this).attr("id") == "card-"+Tripeaks.field.cardCount){
+				if($(this).attr("id") === "card-" + Tripeaks.field.cardCount){
 					Tripeaks.updateUI();
 					Tripeaks.hand.updateDOM();
 				}
