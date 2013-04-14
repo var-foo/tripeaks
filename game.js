@@ -7,6 +7,11 @@ var $field = $("#field"),
     $bestRun = $("#bestRun"),
     $cardsLeft = $("#cardsLeft"),
     $fieldCard = $(".fieldCard");
+    defaults = {
+		peaks: 3,
+		cardWidth:100,
+		cardHeight:144
+	};
 
 /** @constructor */
 var Card = function (suit, number) {
@@ -253,65 +258,64 @@ var Hole = function (deck) {
  * Created because background-position-x is not supported in firefox.
  */
 function cardPosition(suit, num) {
-    var bgp, posX, posY;
+	var bgp,
+		posX = 0,
+		posY = 0,
+		borderWidth = 1;
 
-    switch (suit) {
-        case "clubs":
-            posX = "-1px";
-            break;
-        case "diamonds":
-            posX = "-100px";
-            break;
-        case "hearts":
-            posX = "-199px";
-            break;
-        case "spades":
-            posX = "-298px";
-            break;
-    }
-    switch (num) {
-        case "2":
-            posY = "0";
-            break;
-        case "3":
-            posY = "-146px";
-            break;
-        case "4":
-            posY = "-291px";
-            break;
-        case "5":
-            posY = "-435px";
-            break;
-        case "6":
-            posY = "-581px";
-            break;
-        case "7":
-            posY = "-726px";
-            break;
-        case "8":
-            posY = "-871px";
-            break;
-        case "9":
-            posY = "-1016px";
-            break;
-        case "10":
-            posY = "-1161px";
-            break;
-        case "j":
-            posY = "-1305px";
-            break;
-        case "q":
-            posY = "-1451px";
-            break;
-        case "k":
-            posY = "-1596px";
-            break;
-        case "a":
-            posY = "-1741px";
-            break;
-    }
-    bgp = posX + " " + posY;
-    return bgp;
+	switch (suit) {
+		case "diamonds":
+			posX = window.defaults.cardWidth;
+			break;
+		case "hearts":
+			posX = window.defaults.cardWidth*2;
+			break;
+		case "spades":
+			posX = window.defaults.cardWidth*3;
+			break;
+	}
+	switch (num) {
+		case "3":
+			posY = window.defaults.cardHeight;
+			break;
+		case "4":
+			posY = window.defaults.cardHeight*2;
+			break;
+		case "5":
+			posY = window.defaults.cardHeight*3;
+			break;
+		case "6":
+			posY = window.defaults.cardHeight*4;
+			break;
+		case "7":
+			posY = window.defaults.cardHeight*5;
+			break;
+		case "8":
+			posY = window.defaults.cardHeight*6;
+			break;
+		case "9":
+			posY = window.defaults.cardHeight*7;
+			break;
+		case "10":
+			posY = window.defaults.cardHeight*8;
+			break;
+		case "j":
+			posY = window.defaults.cardHeight*9;
+			break;
+		case "q":
+			posY = window.defaults.cardHeight*10;
+			break;
+		case "k":
+			posY = window.defaults.cardHeight*11;
+			break;
+		case "a":
+			posY = window.defaults.cardHeight*12;
+			break;
+	}
+	posX += borderWidth;
+	posY += borderWidth;
+	bgp = "-" + posX + "px -" + posY + "px";
+	return bgp;
 }
 
 /**
@@ -384,14 +388,6 @@ var TPCookie = function () {
         }
         return null;
     };
-
-/**
-     * @param name {string} the name of the cookie you want to erase
-     
-    this.erase = function (name) {
-        myCookie.create(name, "", -1);
-    };
-    */
 };
 
 /**
@@ -460,11 +456,11 @@ function fieldPosition() {
     var cards = $(".card");
     cards.each(function () {
         var $this = $(this),
-        card = $this.attr("data-card"),
-        cardInfo = card.split("_"),
-        suit = cardInfo[0],
-        num = cardInfo[1],
-        css = cardPosition(suit, num);
+            card = $this.attr("data-card"),
+            cardInfo = card.split("_"),
+            suit = cardInfo[0],
+            num = cardInfo[1],
+            css = cardPosition(suit, num);
 
         $this.css("backgroundPosition", css);
     });
