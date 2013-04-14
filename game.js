@@ -1,5 +1,8 @@
-/** @class Our Tripeaks game. */
+/** Our Tripeaks game.
+ * @namespace 
+ */
 var Tripeaks = {
+		/** An object containing default game properties. */
 		defaults: (function () {
 			var cardWidth = 100,
 				publicObject = {
@@ -11,13 +14,21 @@ var Tripeaks = {
 				};
 			return publicObject;
 		}()),
+		/** The remainder of the deck not face-up. */
 		hole:null,
+		/** The face-up pile from the hole. */
 		hand:null,
+		/** The playing field. */
 		field:null,
+		/** The deck of cards to use. */
 		deck: null,
+		/** So the player feels like they accomplished something. */
 		score: null
 	},
-	/** @class Cookie helper functions */
+	/** 
+	 * Cookie helper functions
+	 * @namespace
+	 */
 	Cookie = {
 		/**
 		 * Sets a cookie.
@@ -60,7 +71,7 @@ var Tripeaks = {
 	},
 	/**
 	 * Represents an individual playing card.
-	 * @constructor 
+	 * @class 
 	 * @parameter suit {Number} The number associated with the suit (1 is Hearts, 2 is Clubs, 3 is Spades, 4 is Diamonds)
 	 * @parameter number {Number} The number of the card ex A is 1 K is 13
 	 */
@@ -148,7 +159,6 @@ var Tripeaks = {
 		 * This function sets the background-positions for the cards in the field.
 		 * Created because background-position-x is not supported in firefox.
 		 * @returns {string} the background position css rule value ex: -155px -400px
-		 * @todo Make this part of the card's properties.
 		 */
 		this.getBackgroundPosition = function () {
 			var bgp,
@@ -216,9 +226,12 @@ var Tripeaks = {
 			return bgp;
 		};
 	},
-	/** @constructor A set of 52 cards. */
+	/**
+	 * A set of 52 cards.
+	 * @class
+	 */
 	Deck = function () {
-		/** Creates a new set of cards. */
+		/* Creates a new set of cards. */
 		var cards = [],
 			newCards = function () {
 				var i,
@@ -230,9 +243,10 @@ var Tripeaks = {
 					cards.push(new Card(suit, number));
 				}
 			};
-		/* Create those new cards. */
+		/* Actually create those new cards. */
 		newCards();
-		/** Shuffles the cards. Modifies the private instance of the cards array.
+		/**
+		 * Shuffles the cards. Modifies the private instance of the cards array.
 		 * @returns this For chainability
 		 */
 		this.shuffle = function () {
@@ -268,7 +282,7 @@ var Tripeaks = {
 	/**
 	 * Field is the peaks themselves. This does not include the hole or hand.
 	 * 
-	 * @constructor
+	 * @class
 	 * @param deck {string} The name of the deck you want to deal from.
 	 */
 	Field = function (deck) {
@@ -349,7 +363,7 @@ var Tripeaks = {
 	},
 	/**
 	 * Hole is the remainder of the deck after field is laid out.
-	 * @constructor
+	 * @class
 	 * @param deck {string} The name of the deck to deal from.
 	 * @todo ensure that the deck is the same as the field's deck to make sure we aren't dealing from separate piles.
 	 */
@@ -391,7 +405,7 @@ var Tripeaks = {
 	},
 	/**
 	 * Hand is the face-up cards you play on the Field from.
-	 * @constructor
+	 * @class
 	 * @param deck {string} The deck to deal from.
 	 */
 	Hand = function (deck) {
@@ -438,7 +452,7 @@ var Tripeaks = {
 	},
 	/**
 	 * Score is the player's... score.
-	 * @constructor
+	 * @class
 	 */
 	Score = function () {
 		var value = (window.Cookie && window.Cookie.read("score") !== 'NaN') ? parseInt(window.Cookie.read("score"), 10) : 100,
