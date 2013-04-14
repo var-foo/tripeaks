@@ -516,8 +516,6 @@ var Tripeaks = {
 		};
 	};
 
-/* Define a Tripeaks game. */
-
 /**
  * Shows the stat updates, updates the score cookie and toggles card visibility.
  * @void
