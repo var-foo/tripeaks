@@ -429,7 +429,9 @@ var Tripeaks = {
 		 * @var
 		 */
 		this.$element = $('#hand');
-		/** Updates the DOM element associated with this object. */
+		/** Updates the DOM element associated with this object. 
+         * @void
+         */
 		this.updateDOM = function () {
 			this.$element.html(this.toHtml());
 		};
@@ -608,6 +610,7 @@ Tripeaks.init = function () {
 			newRow = false;
 			groupCount = 1;
 		}
+        // Animate the card's movement to its position on the field
         animateCard(cardCount, topPos, leftPos);
 		
 		if (cardCount === nextIndex) {
