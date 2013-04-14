@@ -1,5 +1,24 @@
-/* @namespace Cookie helper functions */
-var Cookie = {
+/** @class Our Tripeaks game. */
+var Tripeaks = {
+		defaults: (function () {
+			var cardWidth = 100,
+				publicObject = {
+					peaks: 3,
+					cardWidth: cardWidth,
+					cardHeight: 144,
+					topOffset: 75,
+					leftOffset: cardWidth / 2
+				};
+			return publicObject;
+		}()),
+		hole:null,
+		hand:null,
+		field:null,
+		deck: null,
+		score: null
+	},
+	/** @class Cookie helper functions */
+	Cookie = {
 		/**
 		 * Sets a cookie.
 		 * @param name {string} the name of the cookie you want to create
@@ -495,176 +514,161 @@ var Cookie = {
 			this.$element.text(value);
 			return this;
 		};
-	},
-	/* Define a Tripeaks game. */
-	Tripeaks = {
-		deck: new Deck(),
-		hole: null,
-		hand: null,
-		field: null,
-		score: new Score(),
-		defaults: (function () {
-			var cardWidth = 100,
-				publicObject = {
-					peaks: 3,
-					cardWidth: cardWidth,
-					cardHeight: 144,
-					topOffset: 75,
-					leftOffset: cardWidth / 2
-				};
-			return publicObject;
-		}()),
-		/**
-		 * Initializes the game
-		 * @void
-		 */
-		init: function () {
-			var currentScore = this.score.getScore(),
-				rowLimit = this.defaults.peaks,
-				nextIndex = rowLimit,
-				startingOffset = 150,
-				topPos = 0,
-				leftPos = startingOffset,
-				gapWidth = this.defaults.peaks * this.defaults.cardWidth,
-				grouping = 1,
-				groupCount,
-				cardCount,
-				newRow = true;
-			this.hole = new Hole(this.deck);
-			this.hand = new Hand(this.deck);
-			this.field = new Field(this.deck);
-			this.deck.shuffle().deal();
-			this.hand.receiveCard(this.hole.hitHand());
-			/* Animate the field cards from the Hole. */
-			this.hole.updateDOM();
-			this.field.updateDOM();
-			for (cardCount = 1; cardCount <= this.field.cardCount; cardCount++) {
-				// The new row's first card is good to go
-				if (!newRow) {
-					// This happens regardless.
-					leftPos += this.defaults.cardWidth;
-					if (groupCount === grouping) {
-						// Add gap and reset group counter.
-						leftPos += gapWidth;
-						groupCount = 1;
-					} else {
-						// Increment the group counter.
-						groupCount++;
-					}
-				} else {
-					// start the grouping/gap calculations on the remaining cards in this row
-					newRow = false;
-					groupCount = 1;
+	};
+
+/* Define a Tripeaks game. */
+
+/**
+ * Shows the stat updates, updates the score cookie and toggles card visibility.
+ * @void
+ */
+Tripeaks.updateUI = function () {
+	var arrTop = [],
+		arrLeft = [];
+	this.score.updateDOM().save();
+	$("#currentRun").text(this.score.getCurrentRun());
+	$("#bestRun").text(this.score.setBestRun());
+	// Two .each loops on the same collection of nodes seems strange,
+	// but we need to create the entire array before we start checking
+	// the cards against it. This is a good case for having a small db.
+	this.field.getHtmlElements().each(function () {
+		var $this = $(this);
+		arrTop.push($this.offset().top);
+		arrLeft.push($this.offset().left);
+	}).each(function (index, el) {
+		var $this = $(this),
+			thisLeft = $this.offset().left,
+			thisTop = $this.offset().top,
+			i;
+		for (i = 0; i < arrTop.length; i++) {
+			if (arrTop[i] === thisTop + Tripeaks.defaults.topOffset && (arrLeft[i] === thisLeft + Tripeaks.defaults.leftOffset || arrLeft[i] === thisLeft - Tripeaks.defaults.leftOffset)) {
+				$this.removeClass("front").addClass("back");
+				break;
+			} else {
+				$this.removeClass("back").addClass("front");
+			}
+		}
+	});
+}	
+/**
+ * Initializes the game
+ * @void
+ */
+Tripeaks.init = function () {
+	var rowLimit = this.defaults.peaks,
+		gapWidth = this.defaults.peaks * this.defaults.cardWidth,
+		nextIndex = rowLimit,
+		startingOffset = 150,
+		topPos = 0,
+		leftPos = startingOffset,
+		grouping = 1,
+		groupCount,
+		cardCount,
+		newRow = true;
+	this.deck = new Deck();
+	this.score = new Score();
+	this.hole = new Hole(this.deck);
+	this.hand = new Hand(this.deck);
+	this.field = new Field(this.deck);
+	this.deck.shuffle().deal();
+	this.hand.receiveCard(this.hole.hitHand());
+	/* Animate the field cards from the Hole. */
+	this.hole.updateDOM();
+	this.field.updateDOM();
+	for (cardCount = 1; cardCount <= this.field.cardCount; cardCount++) {
+		// The new row's first card is good to go
+		if (!newRow) {
+			// This happens regardless.
+			leftPos += this.defaults.cardWidth;
+			if (groupCount === grouping) {
+				// Add gap and reset group counter.
+				leftPos += gapWidth;
+				groupCount = 1;
+			} else {
+				// Increment the group counter.
+				groupCount++;
+			}
+		} else {
+			// start the grouping/gap calculations on the remaining cards in this row
+			newRow = false;
+			groupCount = 1;
+		}
+		// Animate the card using jQuery
+		$("#card-" + cardCount).addClass("back").animate({
+				top: topPos,
+				left: leftPos
+			},
+			500,
+			function(){
+				/* Only run when the last card is dealt */
+				if($(this).attr("id") == "card-"+Tripeaks.field.cardCount){
+					Tripeaks.updateUI();
+					Tripeaks.hand.updateDOM();
 				}
-				// Animate the card using jQuery
-				$("#card-" + cardCount).addClass("back").animate({
-						top: topPos,
-						left: leftPos
-					},
-					500,
-					function(){
-						/* Only run when the last card is dealt */
-						if($(this).attr("id") == "card-"+Tripeaks.field.cardCount){
-							Tripeaks.updateUI();
-							Tripeaks.hand.updateDOM();
-						}
-					});
-				if (cardCount === nextIndex) {
-					// we have reached the end of this row
-					rowLimit += this.defaults.peaks;
-					nextIndex = cardCount + rowLimit;
-					// reset top position accordingly
-					topPos += this.defaults.topOffset;
-					// reset left position accordingly
-					startingOffset -= (this.defaults.leftOffset);
-					leftPos = startingOffset;
-					// for each row, we knock a hundred pixels out of the gap.
-					gapWidth -= this.defaults.cardWidth;
-					// increase the grouping by 1 - grouping is also row count.
-					grouping++;
-					newRow = true;
+			});
+		if (cardCount === nextIndex) {
+			// we have reached the end of this row
+			rowLimit += this.defaults.peaks;
+			nextIndex = cardCount + rowLimit;
+			// reset top position accordingly
+			topPos += this.defaults.topOffset;
+			// reset left position accordingly
+			startingOffset -= (this.defaults.leftOffset);
+			leftPos = startingOffset;
+			// for each row, we knock a hundred pixels out of the gap.
+			gapWidth -= this.defaults.cardWidth;
+			// increase the grouping by 1 - grouping is also row count.
+			grouping++;
+			newRow = true;
+		}
+	}
+	this.hole.$element.on("click", function () {
+		Tripeaks.hand.receiveCard(Tripeaks.hole.hitHand()).updateDOM();
+		Tripeaks.score.removeFromScore();
+		Tripeaks.updateUI();
+		// Updates cards left.
+		Tripeaks.hole.updateDOM();
+	});
+	this.field.getHtmlElements().on("click", function () {
+		var $clicked = $(this),
+			clickedId = $clicked.attr("id"),
+			clickedIndex = (clickedId.split("-")[1]) - 1,
+			clickedValue = (Tripeaks.field.returnCard(clickedIndex)).getNumber(),
+			handVal = Tripeaks.hand.getValue(),
+			isPeak = false,
+			success = function () {
+				if ($clicked.hasClass('peak')) {
+					isPeak = true;
+				}
+				Tripeaks.hand.receiveCard(Tripeaks.field.removeCard(clickedIndex)).updateDOM();
+				$clicked.removeClass("fieldCard").hide();
+				Tripeaks.score.addToScore(isPeak);
+			};
+		/* Define an easy way to tell if a card is face-down, and if it is, "lock" the card */
+		//if the clicked card is visible...
+		if (!$clicked.hasClass("back")) {
+			// ...and it's not an ace or a king...
+			if ((clickedValue !== 1) && (clickedValue !== 13)) {
+				// ...and the card's face value is 1 less or 1 greater than the hand card, remove it from
+				// the field and add it to the hand.
+				if ((handVal === clickedValue + 1) || (handVal === clickedValue - 1)) {
+					success();
+				}
+			} else if (clickedValue === 13) {
+				// what to do if the clicked card is a king
+				if ((handVal === 1) || (handVal === clickedValue - 1)) {
+					success();
+				}
+			} else if (clickedValue === 1) {
+				// what to do if the clicked card is an ace
+				if ((handVal === 13) || (Tripeaks.hand.getValue() === clickedValue + 1)) {
+					success();
 				}
 			}
-			this.hole.$element.on("click", function () {
-				Tripeaks.hand.receiveCard(Tripeaks.hole.hitHand()).updateDOM();
-				Tripeaks.score.removeFromScore();
-				Tripeaks.updateUI();
-				// Updates cards left.
-				Tripeaks.hole.updateDOM();
-			});
-			this.field.getHtmlElements().on("click", function () {
-				var $clicked = $(this),
-					clickedId = $clicked.attr("id"),
-					clickedIndex = (clickedId.split("-")[1]) - 1,
-					clickedValue = (Tripeaks.field.returnCard(clickedIndex)).getNumber(),
-					handVal = Tripeaks.hand.getValue(),
-					isPeak = false,
-					success = function () {
-						if ($clicked.hasClass('peak')) {
-							isPeak = true;
-						}
-						Tripeaks.hand.receiveCard(Tripeaks.field.removeCard(clickedIndex)).updateDOM();
-						$clicked.removeClass("fieldCard").hide();
-						Tripeaks.score.addToScore(isPeak);
-					};
-				/* Define an easy way to tell if a card is face-down, and if it is, "lock" the card */
-				//if the clicked card is visible...
-				if (!$clicked.hasClass("back")) {
-					// ...and it's not an ace or a king...
-					if ((clickedValue !== 1) && (clickedValue !== 13)) {
-						// ...and the card's face value is 1 less or 1 greater than the hand card, remove it from
-						// the field and add it to the hand.
-						if ((handVal === clickedValue + 1) || (handVal === clickedValue - 1)) {
-							success();
-						}
-					} else if (clickedValue === 13) {
-						// what to do if the clicked card is a king
-						if ((handVal === 1) || (handVal === clickedValue - 1)) {
-							success();
-						}
-					} else if (clickedValue === 1) {
-						// what to do if the clicked card is an ace
-						if ((handVal === 13) || (Tripeaks.hand.getValue() === clickedValue + 1)) {
-							success();
-						}
-					}
-				}
-				Tripeaks.updateUI();
-			});
-		},
-		/**
-		 * Shows the stat updates, updates the score cookie and toggles card visibility.
-		 * @void
-		 */
-		updateUI: function () {
-			var arrTop = [],
-				arrLeft = [];
-			this.score.updateDOM().save();
-			$("#currentRun").text(this.score.getCurrentRun());
-			$("#bestRun").text(this.score.setBestRun());
-			// Two .each loops on the same collection of nodes seems strange,
-			// but we need to create the entire array before we start checking
-			// the cards against it. This is a good case for having a small db.
-			this.field.getHtmlElements().each(function () {
-				var $this = $(this);
-				arrTop.push($this.offset().top);
-				arrLeft.push($this.offset().left);
-			}).each(function (index, el) {
-				var $this = $(this),
-					thisLeft = $this.offset().left,
-					thisTop = $this.offset().top,
-					i;
-				for (i = 0; i < arrTop.length; i++) {
-					if (arrTop[i] === thisTop + Tripeaks.defaults.topOffset && (arrLeft[i] === thisLeft + Tripeaks.defaults.leftOffset || arrLeft[i] === thisLeft - Tripeaks.defaults.leftOffset)) {
-						$this.removeClass("front").addClass("back");
-						break;
-					} else {
-						$this.removeClass("back").addClass("front");
-					}
-				}
-			});
 		}
-	};
+		Tripeaks.updateUI();
+	});
+};
 //Stuff in here only runs exactly one time per page load...
 (function () {
 	/* Start the game. */
