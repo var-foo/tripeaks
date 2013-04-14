@@ -547,6 +547,7 @@ Tripeaks.updateUI = function () {
 			}
 		}
 	});
+    Tripeaks.hole.updateDOM();
 };
 /**
  * Initializes the game
