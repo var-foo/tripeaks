@@ -214,7 +214,7 @@ var Tripeaks = {
 			posY += borderWidth;
 			bgp = "-" + posX + "px -" + posY + "px";
 			return bgp;
-		}
+		};
 	},
 	/** @constructor A set of 52 cards. */
 	Deck = function () {
@@ -547,7 +547,7 @@ Tripeaks.updateUI = function () {
 			}
 		}
 	});
-}	
+};
 /**
  * Initializes the game
  * @void
@@ -562,7 +562,22 @@ Tripeaks.init = function () {
 		grouping = 1,
 		groupCount,
 		cardCount,
-		newRow = true;
+		newRow = true,
+        animateCard = function(cardCount, topPos, leftPos){
+            // Animate the card using jQuery
+            $("#card-" + cardCount).addClass("back").animate({
+                top: topPos,
+                left: leftPos
+            },
+            500,
+            function(){
+                /* Only run when the last card is dealt */
+                if($(this).attr("id") === "card-" + Tripeaks.field.cardCount){
+                    Tripeaks.updateUI();
+                    Tripeaks.hand.updateDOM();
+                }
+            });
+        };
 	this.deck = new Deck();
 	this.score = new Score();
 	this.hole = new Hole(this.deck);
@@ -573,6 +588,7 @@ Tripeaks.init = function () {
 	/* Animate the field cards from the Hole. */
 	this.hole.updateDOM();
 	this.field.updateDOM();
+    
 	for (cardCount = 1; cardCount <= this.field.cardCount; cardCount++) {
 		// The new row's first card is good to go
 		if (!newRow) {
@@ -591,19 +607,8 @@ Tripeaks.init = function () {
 			newRow = false;
 			groupCount = 1;
 		}
-		// Animate the card using jQuery
-		$("#card-" + cardCount).addClass("back").animate({
-				top: topPos,
-				left: leftPos
-			},
-			500,
-			function(){
-				/* Only run when the last card is dealt */
-				if($(this).attr("id") === "card-" + Tripeaks.field.cardCount){
-					Tripeaks.updateUI();
-					Tripeaks.hand.updateDOM();
-				}
-			});
+        animateCard(cardCount, topPos, leftPos);
+		
 		if (cardCount === nextIndex) {
 			// we have reached the end of this row
 			rowLimit += this.defaults.peaks;
