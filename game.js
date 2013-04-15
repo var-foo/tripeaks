@@ -719,7 +719,10 @@ Tripeaks.init = function () {
 			Tripeaks.score.removeFromScore();
 		}
 		Tripeaks.score.save();
+		// Reset events
+		Tripeaks.hole.$element.add(Tripeaks.field.getHtmlElements()).off();
 		Tripeaks.init();
+		// this is hidden when empty, so show it again
 		Tripeaks.hole.$element.show();
 	});
 	/* Theme switching, toggles a stylesheet loaded from the value of a dropdown. */
