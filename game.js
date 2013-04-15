@@ -513,15 +513,15 @@ var Tripeaks = {
         /** @return {number} The best run to date */
         this.getAllTimeBestRun = function () {
             return allTimeBestRun;
-        }
+        };
         /** @return {number} the best run to date */
         this.setAllTimeBestRun = function () {
-            if(currentRun > parseInt(allTimeBestRun)) {
+            if(currentRun > parseInt(allTimeBestRun, 10)) {
                 allTimeBestRun = currentRun;
                 Local.create("allTimeBestRun", allTimeBestRun);
             }
             return allTimeBestRun;
-        }
+        };
 		/**
 		 * Adds the appropriate amount to your score. Fires when a card in the field is clicked on and causes score to go up
 		 * @parameter isPeak {Boolean} Whether the card clicked was a peak or not.
@@ -776,6 +776,5 @@ Tripeaks.init = function () {
 			$switcher.remove();
 		}
         Prefs.setTheme(stylename);
-		
 	});
 }());

@@ -6,6 +6,6 @@
 #hole.back {
 	background:#234567 url(images/card-back.png) no-repeat -1px -1px !important; /* The !important needs to stay since the background position gets inlined. */
 }
-.card:hover
+.card:hover,
 .handCard:hover,
 #hole:hover { border-color: #eed; }
