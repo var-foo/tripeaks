@@ -70,6 +70,16 @@ var Tripeaks = {
 			return null;
 		}
 	},
+    Local = {
+        create: function(name, value){
+            window.localStorage.setItem(name, value);
+        },
+        
+        read: function(name){
+            return window.localStorage.getItem(name);
+        }
+        
+    } 
 	/**
 	 * Represents an individual playing card.
 	 * @class 
@@ -471,10 +481,13 @@ var Tripeaks = {
 	 * @class
 	 */
 	Score = function () {
-		var value = (window.Cookie && window.Cookie.read("score") !== 'NaN') ? parseInt(window.Cookie.read("score"), 10) : 100,
+		var //value = (window.Cookie && window.Cookie.read("score") !== 'NaN') ? parseInt(window.Cookie.read("score"), 10) : 100,
+            value = (Local.read("score")) ? parseInt(Local.read("score"), 10) : 100,
 			incrementer = 1,
 			currentRun = 0,
-			bestRun = 0;
+			bestRun = 0,
+            allTimeBestRun = (Local.read("allTimeBestRun")) ? parseInt(Local.read("allTimeBestRun"), 10) : 0;
+
 		/** @return {number} The best run of the hand */
 		this.getBestRun = function () {
 			return bestRun;
@@ -486,6 +499,18 @@ var Tripeaks = {
 			}
 			return bestRun;
 		};
+        /** @return {number} The best run to date */
+        this.getAllTimeBestRun = function () {
+            return allTimeBestRun;
+        }
+        /** @return {number} the best run to date */
+        this.setAllTimeBestRun = function () {
+            if(currentRun > parseInt(allTimeBestRun)) {
+                allTimeBestRun = currentRun;
+                Local.create("allTimeBestRun", allTimeBestRun);
+            }
+            return allTimeBestRun;
+        }
 		/**
 		 * Adds the appropriate amount to your score. Fires when a card in the field is clicked on and causes score to go up
 		 * @parameter isPeak {Boolean} Whether the card clicked was a peak or not.
@@ -538,6 +563,7 @@ var Tripeaks = {
 		 */
 		this.save = function () {
 			Cookie.create("score", value, 100);
+            Local.create("score", value);
 			return this;
 		};
 		/**
@@ -559,6 +585,7 @@ Tripeaks.updateUI = function () {
 	this.score.updateDOM().save();
 	$("#currentRun").text(this.score.getCurrentRun());
 	$("#bestRun").text(this.score.setBestRun());
+    $("#allTimeBestRun").text(this.score.setAllTimeBestRun());
 	// Two .each loops on the same collection of nodes seems strange,
 	// but we need to create the entire array before we start checking
 	// the cards against it. This is a good case for having a small db.
@@ -706,6 +733,8 @@ Tripeaks.init = function () {
 				}
 			}
 		}
+        // If there is no all-time best run set in local storage and you have local storage, put something here
+        if(!Local.read("allTimeBestRun")){ Local.create("allTimeBestRun", "0"); }
 		Tripeaks.updateUI();
 	});
 };
@@ -733,6 +762,7 @@ Tripeaks.init = function () {
 		if ($switcher.length) {
 			$switcher.remove();
 		}
+        Local.create("theme", stylename);
 		$('<link />').attr({
 			'id': 'switcher',
 			'rel': 'stylesheet',
