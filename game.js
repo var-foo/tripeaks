@@ -79,7 +79,18 @@ var Tripeaks = {
             return window.localStorage.getItem(name);
         }
         
-    } 
+    },
+    Prefs = {
+        setTheme: function(stylename){
+            Local.create("theme", stylename);
+            $('<link />').attr({
+                'id': 'switcher',
+                'rel': 'stylesheet',
+                'href': 'themes/' + stylename + '/' + stylename + '.css',
+                'type': 'text/css'
+            }).appendTo($('head'));
+        }
+    },
 	/**
 	 * Represents an individual playing card.
 	 * @class 
@@ -642,6 +653,8 @@ Tripeaks.init = function () {
 	this.hole = new Hole(this.deck);
 	this.hand = new Hand();
 	this.field = new Field(this.deck);
+    // Set the theme
+    Prefs.setTheme(Local.read("theme"));
 	// Shuffle 'em and deal 'em
 	this.deck.shuffle().shuffle().deal();
 	// Hand gets one from the hole
@@ -762,12 +775,7 @@ Tripeaks.init = function () {
 		if ($switcher.length) {
 			$switcher.remove();
 		}
-        Local.create("theme", stylename);
-		$('<link />').attr({
-			'id': 'switcher',
-			'rel': 'stylesheet',
-			'href': 'themes/' + stylename + '/' + stylename + '.css',
-			'type': 'text/css'
-		}).appendTo($('head'));
+        Prefs.setTheme(stylename);
+		
 	});
 }());
