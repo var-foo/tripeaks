@@ -6,6 +6,7 @@ var Tripeaks = {
 		defaults: (function () {
 			var cardWidth = 100,
 				publicObject = {
+					/** The number of peaks. Tri means 3. */
 					peaks: 3,
 					cardWidth: cardWidth,
 					cardHeight: 144,
@@ -50,7 +51,7 @@ var Tripeaks = {
 		/**
 		 * Gets a cookie.
 		 * @param name {string} the name of the cookie you want to read
-		 * @returns null
+		 * @return {null}
 		 */
 		read: function (name) {
 			var i,
@@ -76,11 +77,11 @@ var Tripeaks = {
 	 * @parameter number {Number} The number of the card ex A is 1 K is 13
 	 */
 	Card = function (suit, number) {
-		/** @returns {Number} The number of the card in the deck. (1-52) */
+		/** @return {Number} The number of the card in the deck. (1-52) */
 		this.getNumber = function () {
 			return number;
 		};
-		/** @returns {String} The name of the suit. "Hearts","Clubs","Spades", or "Diamonds." */
+		/** @return {String} The name of the suit. "Hearts","Clubs","Spades", or "Diamonds." */
 		this.getSuit = function () {
 			var suitName = '';
 			switch (suit) {
@@ -99,7 +100,7 @@ var Tripeaks = {
 			}
 			return suitName;
 		};
-		/** @returns {String} The HTML-encoded symbol of the suit. */
+		/** @return {String} The HTML-encoded symbol of the suit. */
 		this.getSymbol = function () {
 			var suitName = '';
 			switch (suit) {
@@ -118,7 +119,7 @@ var Tripeaks = {
 			}
 			return suitName;
 		};
-		/** @returns {Number} The value of the card for scoring. */
+		/** @return {Number} The value of the card for scoring. */
 		this.getValue = function () {
 			var value = number;
 			if (number >= 10) {
@@ -129,7 +130,7 @@ var Tripeaks = {
 			}
 			return value;
 		};
-		/** @returns {String} The name of the card. "Ace" */
+		/** @return {String} The name of the card. "Ace" */
 		this.getName = function () {
 			var cardName = '';
 			switch (number) {
@@ -151,14 +152,14 @@ var Tripeaks = {
 			}
 			return cardName;
 		};
-		/** @returns {String} The full name of the card. "Ace of Spades" */
+		/** @return {String} The full name of the card. "Ace of Spades" */
 		this.getFullName = function () {
 			return this.getName() + this.getSymbol();
 		};
 		/**
 		 * This function sets the background-positions for the cards in the field.
 		 * Created because background-position-x is not supported in firefox.
-		 * @returns {string} the background position css rule value ex: -155px -400px
+		 * @return {string} the background position css rule value ex: -155px -400px
 		 */
 		this.getBackgroundPosition = function () {
 			var bgp,
@@ -247,7 +248,7 @@ var Tripeaks = {
 		newCards();
 		/**
 		 * Shuffles the cards. Modifies the private instance of the cards array.
-		 * @returns this For chainability
+		 * @return {Deck} For chainability we return 'this'
 		 */
 		this.shuffle = function () {
 			for (var j, x, i = cards.length; i; j = parseInt(Math.random() * i, 10), x = cards[--i], cards[i] = cards[j], cards[j] = x) {
@@ -255,11 +256,11 @@ var Tripeaks = {
 			}
 			return this;
 		};
-		/** @returns {Array} An array of cards representing the Deck. */
+		/** @return {Array<Card>} An array of cards representing the Deck. */
 		this.getCards = function () {
 			return cards;
 		};
-		/** @returns {Card} Deals the top card off the deck. Removes it from the Deck. */
+		/** @return {Card} Deals the top card off the deck. Removes it from the Deck. */
 		this.deal = function (hole) {
 			var i;
 			this.shuffle();
@@ -274,7 +275,7 @@ var Tripeaks = {
 				hole.receiveCard(this.hit());
 			}
 		};
-		/* @returns {Card} Pops the top card off the deck. */
+		/* @return {Card} Pops the top card off the deck. */
 		this.hit = function () {
 			return cards.pop();
 		};
@@ -283,7 +284,7 @@ var Tripeaks = {
 	 * Field is the peaks themselves. This does not include the hole or hand.
 	 * 
 	 * @class
-	 * @param deck {string} The name of the deck you want to deal from.
+	 * @param deck {Deck} The deck you want to deal from.
 	 */
 	Field = function (deck) {
 		var cards = [],
@@ -296,20 +297,22 @@ var Tripeaks = {
 		}
 		/**
 		 * accepts a card and adds it to the cards array
-		 * @param card {object} the card being received by the field 
+		 * @param card {Card} the card being received by the field 
 		 */
 		this.receiveCard = function (card) {
 			cards.push(card);
 		};
 		/**
-		 * returns a single card object in the array
-		 * @param index {number} the index of the card in the cards array
+		 * Returns a single card object in the array
+		 * @param index {Number} the index of the card in the cards array.
+		 * @return {Card} The card at the specified index in the field.
 		 */
-		this.returnCard = function (index) {
+		this.getCard = function (index) {
 			return cards[index];
 		};
 		/**
 		 * Creates a div for each card in the cards array.
+		 * @return {String} The HTML representation of the field.
 		 */
 		this.toHtml = function () {
 			var arrayOut = [],
@@ -326,6 +329,7 @@ var Tripeaks = {
 		};
 		/*
 		 * Returns a jQuery selection of each individual field card.
+		 * @return {jQuery} Selection of all field cards.
 		 */
 		this.getHtmlElements = function () {
 			var arrayOut = [],
@@ -336,35 +340,40 @@ var Tripeaks = {
 			return $(arrayOut.join());
 		};
 		/**
-		 * removes a single card from the cards array
+		 * Removes a single card from the cards array
 		 * @param index {number} the index of the card in the cards array that you want to remove
-		 * @returns {object} the card to be removed
+		 * @return {Card} The card to be removed.
 		 */
 		this.removeCard = function (index) {
 			var card = cards[index];
 			return card;
 		};
 		/**
-		 * @returns {number} the number of peaks left on the field
+		 * Get the number of peaks remaining.
+		 * @return {Number} the number of peaks left on the field.
 		 */
 		this.getNumPeaks = function () {
 			return peaksLeft;
 		};
-		/** Subtracts one from the number of peaks on the field 
+		/**
+		 * Subtracts one from the number of peaks on the field.
 		 * @void
 		 */
 		this.removePeak = function () {
 			peaksLeft--;
 		};
+		/** References the DOM element used to display the field. */
 		this.$element = $('#field');
+		/** Updates the DOM element associated with this object. */
 		this.updateDOM = function () {
 			this.$element.html(this.toHtml());
+			return this;
 		};
 	},
 	/**
 	 * Hole is the remainder of the deck after field is laid out.
 	 * @class
-	 * @param deck {string} The name of the deck to deal from.
+	 * @param deck {Deck} The deck to deal from.
 	 * @todo ensure that the deck is the same as the field's deck to make sure we aren't dealing from separate piles.
 	 */
 	Hole = function (deck) {
@@ -374,21 +383,21 @@ var Tripeaks = {
 			cards.push(deck.deal());
 		}
 		/**
-		 * pops the top card off of the stack
-		 * @returns {object} the next card in the deck
+		 * Pops the top card off of the stack
+		 * @return {Card} The next card in the deck
 		 */
 		this.hitHand = function () {
 			return cards.pop();
 		};
 		/**
-		 * puts a new card object into the cards array
-		 * @param card {object} the card you want to push to the hole
+		 * Puts a new card object into the cards array
+		 * @param card {Card} The card you want to push to the hole
 		 * @void
 		 */
 		this.receiveCard = function (card) {
 			cards.push(card);
 		};
-		/** @returns {number} the total number of card objects in the cards array */
+		/** @return {number} The total number of card objects in the cards array */
 		this.checkForCards = function () {
 			return cards.length;
 		};
@@ -406,41 +415,47 @@ var Tripeaks = {
 	/**
 	 * Hand is the face-up cards you play on the Field from.
 	 * @class
-	 * @param deck {string} The deck to deal from.
+	 * @param deck {Deck} The deck to deal from.
 	 */
-	Hand = function (deck) {
+	Hand = function () {
 		var cards = [];
 		/**
-		 * @param card {object} the card that is being received
-		 * @return this For chainability
+		 * Receive a card into this hand.
+		 * @param card {Card} the card that is being received
+		 * @return {Hand} For chainability we return 'this'
 		 */
 		this.receiveCard = function (card) {
 			cards.push(card);
 			return this;
 		};
 		/**
-		 * @returns {string} the DOM element of a card
+		 * HTML output
+		 * @return {String} The HTML representation of the hand.
 		 */
 		this.toHtml = function () {
 			var arrayOut = [],
 				topCard = cards.length - 1,
 				cardSuit = cards[topCard].getSuit(),
-				cardNumber = cards[topCard].getNumber(),
 				cardName = cards[topCard].getName();
 			arrayOut.push('<div class="card front handCard" data-card="', cardSuit.toLowerCase(), '_', String(cardName).toLowerCase(), '" style="background-position:', cards[topCard].getBackgroundPosition(), ';" />');
 			return arrayOut.join('');
 		};
-		/** @returns {object} the top card on the pile */
+		/**
+		 * The top card is the only interactive hand card.
+		 * @return {Card} The top card on the pile
+		 */
 		this.getTopCard = function () {
 			return cards[(cards.length - 1)];
 		};
-		/** @returns {string} string representation of the card number */
+		/**
+		 * Gets the number of the top card.
+		 * @return {String} String representation of the card number
+		 */
 		this.getValue = function () {
 			return this.getTopCard().getNumber();
 		};
 		/**
 		 * References the DOM element used to display the hand.
-		 * @var
 		 */
 		this.$element = $('#hand');
 		/** Updates the DOM element associated with this object. 
@@ -448,6 +463,7 @@ var Tripeaks = {
          */
 		this.updateDOM = function () {
 			this.$element.html(this.toHtml());
+			return this;
 		};
 	},
 	/**
@@ -459,11 +475,11 @@ var Tripeaks = {
 			incrementer = 1,
 			currentRun = 0,
 			bestRun = 0;
-		/** @returns {number} the best run of the hand */
+		/** @return {number} The best run of the hand */
 		this.getBestRun = function () {
 			return bestRun;
 		};
-		/** @returns {number} best run so far */
+		/** @return {number} The best run so far */
 		this.setBestRun = function () {
 			if (currentRun > bestRun) {
 				bestRun = currentRun;
@@ -472,7 +488,7 @@ var Tripeaks = {
 		};
 		/**
 		 * Adds the appropriate amount to your score. Fires when a card in the field is clicked on and causes score to go up
-		 * @parameter isPeak {bool} whether the card clicked was a peak or not
+		 * @parameter isPeak {Boolean} Whether the card clicked was a peak or not.
 		 * @void
 		 */
 		this.addToScore = function (isPeak) {
@@ -497,7 +513,8 @@ var Tripeaks = {
 			}
 			incrementer++;
 		};
-		/** Remove points from the score and reset the score incrementer
+		/**
+		 * Remove points from the score and reset the score incrementer
 		 * @void
 		 */
 		this.removeFromScore = function () {
@@ -505,7 +522,7 @@ var Tripeaks = {
 			currentRun = 0;
 			incrementer = 1;
 		};
-		/** @return {number} the score */
+		/** @return {number} The score */
 		this.getScore = function () {
 			return value;
 		};
@@ -517,21 +534,21 @@ var Tripeaks = {
 		this.$element = $("#score");
 		/**
 		 * Saves the score to a cookie.
-		 * @return this For chainability
+		 * @return {Score} 'this' For chainability
 		 */
 		this.save = function () {
 			Cookie.create("score", value, 100);
 			return this;
 		};
 		/**
-		 * @return this For chainability
+		 * Updates the DOM element for the score.
+		 * @return {Score} 'this' For chainability
 		 */
 		this.updateDOM = function (){
 			this.$element.text(value);
 			return this;
 		};
 	};
-
 /**
  * Shows the stat updates, updates the score cookie and toggles card visibility.
  * @void
@@ -546,16 +563,15 @@ Tripeaks.updateUI = function () {
 	// but we need to create the entire array before we start checking
 	// the cards against it. This is a good case for having a small db.
 	this.field.getHtmlElements().each(function () {
-		var $this = $(this);
-		arrTop.push($this.offset().top);
-		arrLeft.push($this.offset().left);
+		var offset = $(this).offset();
+		arrTop.push(offset.top);
+		arrLeft.push(offset.left);
 	}).each(function (index, el) {
 		var $this = $(this),
-			thisLeft = $this.offset().left,
-			thisTop = $this.offset().top,
+			offset = $this.offset(),
 			i;
 		for (i = 0; i < arrTop.length; i++) {
-			if (arrTop[i] === thisTop + Tripeaks.defaults.topOffset && (arrLeft[i] === thisLeft + Tripeaks.defaults.leftOffset || arrLeft[i] === thisLeft - Tripeaks.defaults.leftOffset)) {
+			if (arrTop[i] === offset.top + Tripeaks.defaults.topOffset && (arrLeft[i] === offset.left + Tripeaks.defaults.leftOffset || arrLeft[i] === offset.left - Tripeaks.defaults.leftOffset)) {
 				$this.removeClass("front").addClass("back");
 				break;
 			} else {
@@ -563,6 +579,7 @@ Tripeaks.updateUI = function () {
 			}
 		}
 	});
+	// This displays the cards left count.
     Tripeaks.hole.updateDOM();
 };
 /**
@@ -573,39 +590,38 @@ Tripeaks.init = function () {
 	var rowLimit = this.defaults.peaks,
 		gapWidth = this.defaults.peaks * this.defaults.cardWidth,
 		nextIndex = rowLimit,
-		startingOffset = 150,
+		startingOffset = this.defaults.peaks * this.defaults.leftOffset,
+		// positioning the first card
 		topPos = 0,
 		leftPos = startingOffset,
+		// used as a row counter and as a way to determine the clustering of cards.
 		grouping = 1,
+		// an incrementer that lets us know where we are in the grouping.
 		groupCount,
+		// an incrementer for each card in the field.
 		cardCount,
+		// we skip calculating the first element in a row. That is done when the row is reset.
 		newRow = true,
-        animateCard = function(cardCount, topPos, leftPos){
-            // Animate the card using jQuery
-            $("#card-" + cardCount).addClass("back").animate({
-                top: topPos,
-                left: leftPos
-            },
-            500,
-            function(){
-                /* Only run when the last card is dealt */
-                if($(this).attr("id") === "card-" + Tripeaks.field.cardCount){
-                    Tripeaks.updateUI();
-                    Tripeaks.hand.updateDOM();
-                }
-            });
-        };
+		// this is the one and only finish animation function.
+		finishAnimation = function(){
+			/* Only run when the last card is dealt */
+			if($(this).attr("id") === "card-" + Tripeaks.field.cardCount){
+				Tripeaks.updateUI();
+				Tripeaks.hand.updateDOM();
+			}
+		};
 	this.deck = new Deck();
 	this.score = new Score();
 	this.hole = new Hole(this.deck);
-	this.hand = new Hand(this.deck);
+	this.hand = new Hand();
 	this.field = new Field(this.deck);
-	this.deck.shuffle().deal();
+	// Shuffle 'em and deal 'em
+	this.deck.shuffle().shuffle().deal();
+	// Hand gets one from the hole
 	this.hand.receiveCard(this.hole.hitHand());
 	/* Animate the field cards from the Hole. */
 	this.hole.updateDOM();
 	this.field.updateDOM();
-    
 	for (cardCount = 1; cardCount <= this.field.cardCount; cardCount++) {
 		// The new row's first card is good to go
 		if (!newRow) {
@@ -624,25 +640,27 @@ Tripeaks.init = function () {
 			newRow = false;
 			groupCount = 1;
 		}
-        // Animate the card's movement to its position on the field
-        animateCard(cardCount, topPos, leftPos);
-		
+        // Animate the card using jQuery
+		$("#card-" + cardCount).addClass("back").animate({top: topPos, left: leftPos}, 500, finishAnimation);
+		// have we reached the end of this row?
 		if (cardCount === nextIndex) {
-			// we have reached the end of this row
+			newRow = true;
+			// increase the limit for the next row
 			rowLimit += this.defaults.peaks;
+			// find the index of the row limit offset
 			nextIndex = cardCount + rowLimit;
 			// reset top position accordingly
 			topPos += this.defaults.topOffset;
 			// reset left position accordingly
-			startingOffset -= (this.defaults.leftOffset);
+			startingOffset -= this.defaults.leftOffset;
 			leftPos = startingOffset;
-			// for each row, we knock a hundred pixels out of the gap.
+			// for each row, we knock a card's width out of the gap.
 			gapWidth -= this.defaults.cardWidth;
 			// increase the grouping by 1 - grouping is also row count.
 			grouping++;
-			newRow = true;
 		}
 	}
+	/* Click handler for the Hole */
 	this.hole.$element.on("click", function () {
 		Tripeaks.hand.receiveCard(Tripeaks.hole.hitHand()).updateDOM();
 		Tripeaks.score.removeFromScore();
@@ -650,11 +668,12 @@ Tripeaks.init = function () {
 		// Updates cards left.
 		Tripeaks.hole.updateDOM();
 	});
+	/* Click handler for the cards in the field */
 	this.field.getHtmlElements().on("click", function () {
 		var $clicked = $(this),
 			clickedId = $clicked.attr("id"),
 			clickedIndex = (clickedId.split("-")[1]) - 1,
-			clickedValue = (Tripeaks.field.returnCard(clickedIndex)).getNumber(),
+			clickedValue = (Tripeaks.field.getCard(clickedIndex)).getNumber(),
 			handVal = Tripeaks.hand.getValue(),
 			isPeak = false,
 			success = function () {
@@ -701,7 +720,10 @@ Tripeaks.init = function () {
 			Tripeaks.score.removeFromScore();
 		}
 		Tripeaks.score.save();
+		// Reset events
+		Tripeaks.hole.$element.add(Tripeaks.field.getHtmlElements()).off();
 		Tripeaks.init();
+		// this is hidden when empty, so show it again
 		Tripeaks.hole.$element.show();
 	});
 	/* Theme switching, toggles a stylesheet loaded from the value of a dropdown. */
